@@ -1,0 +1,89 @@
+{
+  "schemaVersion": 1,
+  "product": {
+    "name": "10 mm circular inspection target",
+    "diameterMm": 10,
+    "minimumRoiDiameterPx": 180,
+    "notes": "Print at 100% scale. The black outer ring measures 10 mm in diameter."
+  },
+  "decision": {
+    "defectThreshold": 0.42,
+    "normalMargin": 0.04,
+    "stableFrames": 3,
+    "analysisIntervalMs": 1200
+  },
+  "classes": [
+    {
+      "id": "normal-clean-a",
+      "group": "normal",
+      "labelKo": "정상 A",
+      "labelEn": "clean circular part",
+      "descriptionKo": "원형 외곽선이 연속적이고 내부 표면에 균열, 긁힘, 오염이 없는 정상품",
+      "prompt": "a simple inspection symbol of a clean light gray circle with a complete dark outline and no marks inside",
+      "asset": "/assets/targets/normal-clean-a.svg"
+    },
+    {
+      "id": "normal-clean-b",
+      "group": "normal",
+      "labelKo": "정상 B",
+      "labelEn": "uniform circular part",
+      "descriptionKo": "원형 형상이 유지되고 표면 밝기가 균일한 정상품",
+      "prompt": "a simple inspection diagram of a perfect round light gray disk with an even circular border",
+      "asset": "/assets/targets/normal-clean-b.svg"
+    },
+    {
+      "id": "defect-radial-crack",
+      "group": "defect",
+      "labelKo": "방사형 균열",
+      "labelEn": "radial crack",
+      "descriptionKo": "중심 또는 내부에서 외곽 방향으로 이어지는 가는 균열선",
+      "prompt": "a simple diagram of a gray circle with a branching red crack running from the center to the edge",
+      "asset": "/assets/targets/defect-radial-crack.svg"
+    },
+    {
+      "id": "defect-edge-chip",
+      "group": "defect",
+      "labelKo": "가장자리 깨짐",
+      "labelEn": "chipped edge",
+      "descriptionKo": "원형 외곽의 일부가 떨어져 나가거나 오목하게 손실된 불량",
+      "prompt": "a simple diagram of a gray circle with a broken chipped edge and a missing wedge on the rim",
+      "asset": "/assets/targets/defect-edge-chip.svg"
+    },
+    {
+      "id": "defect-scratch",
+      "group": "defect",
+      "labelKo": "표면 긁힘",
+      "labelEn": "surface scratch",
+      "descriptionKo": "표면을 가로지르는 길고 얕은 선 형태의 긁힘",
+      "prompt": "a simple diagram of a gray circle with two long red diagonal scratch lines across the surface",
+      "asset": "/assets/targets/defect-scratch.svg"
+    },
+    {
+      "id": "defect-contamination",
+      "group": "defect",
+      "labelKo": "이물 오염",
+      "labelEn": "surface contamination",
+      "descriptionKo": "표면에 불규칙한 검은 점이나 얼룩이 남은 오염 불량",
+      "prompt": "a simple diagram of a gray circle covered with several irregular black contamination spots",
+      "asset": "/assets/targets/defect-contamination.svg"
+    },
+    {
+      "id": "defect-deformation",
+      "group": "defect",
+      "labelKo": "형상 변형",
+      "labelEn": "deformed circle",
+      "descriptionKo": "원형이 눌리거나 늘어나 타원형으로 변형된 불량",
+      "prompt": "a simple diagram of a deformed red outlined disk compressed into a wide oval shape",
+      "asset": "/assets/targets/defect-deformation.svg"
+    },
+    {
+      "id": "defect-pinhole",
+      "group": "defect",
+      "labelKo": "핀홀",
+      "labelEn": "pinhole defect",
+      "descriptionKo": "표면에 작지만 명확한 원형 구멍이 형성된 불량",
+      "prompt": "a simple diagram of a gray circle with one distinct black pinhole surrounded by a red ring",
+      "asset": "/assets/targets/defect-pinhole.svg"
+    }
+  ]
+}

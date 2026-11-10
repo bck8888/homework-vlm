@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="10mm" height="10mm" viewBox="0 0 100 100" role="img" aria-labelledby="normal-clean-b-title">
+  <title id="normal-clean-b-title">정상 B</title>
+  <rect width="100" height="100" fill="#fff"/>
+  <circle cx="50" cy="50" r="45" fill="#dbe8ed" stroke="#102a43" stroke-width="5"/><circle cx="50" cy="50" r="34" fill="none" stroke="#b8ccd4" stroke-width="2"/><circle cx="50" cy="50" r="3" fill="#9db7c2"/>
+</svg>

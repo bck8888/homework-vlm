@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="10mm" height="10mm" viewBox="0 0 100 100" role="img" aria-labelledby="defect-pinhole-title">
+  <title id="defect-pinhole-title">핀홀</title>
+  <rect width="100" height="100" fill="#fff"/>
+  <circle cx="50" cy="50" r="45" fill="#dbe8ed" stroke="#102a43" stroke-width="5"/><circle cx="59" cy="44" r="10" fill="#102a43"/><circle cx="59" cy="44" r="4" fill="#fff"/><circle cx="59" cy="44" r="13" fill="none" stroke="#d94b43" stroke-width="2"/>
+</svg>

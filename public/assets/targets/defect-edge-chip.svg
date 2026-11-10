@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="10mm" height="10mm" viewBox="0 0 100 100" role="img" aria-labelledby="defect-edge-chip-title">
+  <title id="defect-edge-chip-title">가장자리 깨짐</title>
+  <rect width="100" height="100" fill="#fff"/>
+  <circle cx="50" cy="50" r="45" fill="#dbe8ed" stroke="#102a43" stroke-width="5"/><path d="M82 19 L72 31 L88 39 L97 30 L97 8 Z" fill="#fff"/><path d="M80 18 L71 31 L88 39" fill="none" stroke="#d94b43" stroke-width="5" stroke-linecap="round"/>
+</svg>

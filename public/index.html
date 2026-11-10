@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#071b2e" />
+    <title>CLIP 양불량 판정 시연</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div>
+        <p class="eyebrow">VISION–LANGUAGE INSPECTION</p>
+        <h1>CLIP 양불량 판정 시연</h1>
+      </div>
+      <div class="status-strip" aria-label="시스템 상태">
+        <span id="serverStatus" class="status neutral">서버 확인 중</span>
+        <span id="modelStatus" class="status neutral">CLIP 미로딩</span>
+        <span id="hailoStatus" class="status neutral">Hailo 확인 중</span>
+        <a class="manual-link" href="/manual.html">사용 매뉴얼</a>
+      </div>
+    </header>
+
+    <main>
+      <section class="pipeline" aria-label="판정 단계">
+        <article class="pipeline-step active" data-step="1">
+          <b>01</b><span>대상 검출</span><small>카메라 ROI</small>
+        </article>
+        <article class="pipeline-step" data-step="2">
+          <b>02</b><span>벡터 생성</span><small>CLIP image encoder</small>
+        </article>
+        <article class="pipeline-step" data-step="3">
+          <b>03</b><span>설명 비교</span><small>정상·불량 prompts</small>
+        </article>
+        <article class="pipeline-step" data-step="4">
+          <b>04</b><span>판정·저장</span><small>신호등과 이력</small>
+        </article>
+      </section>
+
+      <section class="workspace">
+        <div class="camera-panel panel">
+          <div class="panel-heading">
+            <div><p class="section-label">LIVE INPUT</p><h2>카메라와 검출 영역</h2></div>
+            <span id="fpsBadge" class="metric">대기</span>
+          </div>
+          <div class="viewport" id="viewport">
+            <video id="camera" autoplay playsinline muted></video>
+            <img id="sampleImage" alt="선택한 검사 표본" hidden />
+            <canvas id="overlay"></canvas>
+            <div class="target-guide"><span>10 mm 표본을 이 영역에 맞추세요</span></div>
+            <div id="cameraMessage" class="camera-message">카메라를 시작하거나 아래 표본을 선택하세요</div>
+          </div>
+          <div class="camera-actions">
+            <button id="cameraButton" class="primary">카메라 시작</button>
+            <button id="analyzeButton">현재 화면 판정</button>
+            <label class="toggle"><input id="autoToggle" type="checkbox" /><span>자동 판정</span></label>
+          </div>
+          <div class="roi-row">
+            <div><span>검출 방식</span><strong>중앙 ROI + 대비 검사</strong></div>
+            <div><span>검출 크기</span><strong id="roiSize">—</strong></div>
+            <div><span>영상 대비</span><strong id="contrastValue">—</strong></div>
+            <canvas id="roiPreview" width="224" height="224" aria-label="검출된 ROI"></canvas>
+          </div>
+        </div>
+
+        <aside class="decision-panel panel">
+          <div class="panel-heading">
+            <div><p class="section-label">DECISION</p><h2>가상 판정기</h2></div>
+            <span id="engineBadge" class="metric">CLIP</span>
+          </div>
+          <div class="signal-wrap">
+            <div id="signalLamp" class="signal-lamp idle" aria-label="판정 신호등">
+              <span class="lamp red"></span><span class="lamp amber"></span><span class="lamp green"></span>
+            </div>
+            <div class="verdict-copy">
+              <p id="verdictLabel">판정 대기</p>
+              <strong id="verdictDetail">입력 영상을 준비하세요</strong>
+              <small id="verdictMeta">판정 결과는 설명 후보 간 상대 점수입니다.</small>
+            </div>
+          </div>
+          <div class="settings-grid">
+            <label>실행 엔진
+              <select id="engineSelect">
+                <option value="clip">실제 CLIP · ONNX/WASM</option>
+                <option value="rehearsal">리허설 · 결정론적 점수</option>
+              </select>
+            </label>
+            <label>불량 임계값 <output id="thresholdOutput">0.42</output>
+              <input id="threshold" type="range" min="0.20" max="0.85" step="0.01" value="0.42" />
+            </label>
+            <label>정상 대비 여유값 <output id="marginOutput">0.04</output>
+              <input id="margin" type="range" min="0" max="0.25" step="0.01" value="0.04" />
+            </label>
+          </div>
+          <button id="loadModelButton" class="wide">CLIP 모델 로드</button>
+          <p class="engine-note">기본 모델은 CLIP ViT-B/32 양자화 ONNX입니다. 최초 실행 시 모델을 내려받아 브라우저 캐시에 저장합니다.</p>
+        </aside>
+      </section>
+
+      <section class="analysis-grid">
+        <article class="panel scores-panel">
+          <div class="panel-heading">
+            <div><p class="section-label">VECTOR MATCH</p><h2>이미지–설명 유사도</h2></div>
+            <span id="latency" class="metric">— ms</span>
+          </div>
+          <div class="vector-flow">
+            <span>ROI image</span><i></i><span>image vector</span><i></i><span>text vectors</span><i></i><span>relative score</span>
+          </div>
+          <div id="scoreBars" class="score-bars"><p class="empty">판정 후 설명별 점수가 표시됩니다.</p></div>
+        </article>
+
+        <article class="panel history-panel">
+          <div class="panel-heading">
+            <div><p class="section-label">INSPECTION LOG</p><h2>저장된 판정</h2></div>
+            <button id="downloadHistory" class="text-button">JSON 내보내기</button>
+          </div>
+          <div id="historyList" class="history-list"><p class="empty">저장된 판정이 없습니다.</p></div>
+        </article>
+      </section>
+
+      <section class="panel samples-panel">
+        <div class="panel-heading">
+          <div><p class="section-label">PRINT TARGETS</p><h2>10 mm 검사 표본 8개</h2></div>
+          <a class="button-link" href="/assets/targets/print-sheet.html" target="_blank">인쇄 시트 열기</a>
+        </div>
+        <p class="help">표본을 선택하면 카메라 없이 UI와 CLIP 판정을 시험할 수 있습니다. 실제 출력은 인쇄 시트에서 배율 100%로 인쇄하세요.</p>
+        <div id="sampleGrid" class="sample-grid"></div>
+      </section>
+
+      <section class="panel database-panel">
+        <div class="panel-heading">
+          <div><p class="section-label">JSON DATABASE</p><h2>정상·불량 설명 DB</h2></div>
+          <a class="text-button" href="/data/defects.json" target="_blank">원본 JSON</a>
+        </div>
+        <div id="databaseTable" class="database-table"></div>
+      </section>
+    </main>
+
+    <footer>
+      <span>CLIP은 학습된 전용 검사기가 아니라 이미지와 설명의 의미적 근접도를 비교합니다.</span>
+      <span>실제 생산 적용 전에는 조명·카메라·제품별 검증과 임계값 교정이 필요합니다.</span>
+    </footer>
+    <script type="module" src="/app.js"></script>
+  </body>
+</html>

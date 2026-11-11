@@ -1,0 +1,297 @@
+{
+  "scope": "CPU diagnostic replay only; interpolation differs slightly from browser. Same 8 synthetic designs repeated 4 times, not independent real-world validation.",
+  "top1Correct": 32,
+  "binaryCorrect": 32,
+  "review": 0,
+  "medianImageEncoderSeconds": 0.0386951039545238,
+  "results": [
+    {
+      "index": 0,
+      "truth": 4,
+      "predicted": 4,
+      "score": 0.9642907381057739,
+      "gap": 0.09379100799560547,
+      "status": "defect",
+      "seconds": 0.037332791835069656
+    },
+    {
+      "index": 1,
+      "truth": 1,
+      "predicted": 1,
+      "score": 0.9973312616348267,
+      "gap": 0.04360306262969971,
+      "status": "normal",
+      "seconds": 0.03244020789861679
+    },
+    {
+      "index": 2,
+      "truth": 6,
+      "predicted": 6,
+      "score": 0.9974343776702881,
+      "gap": 0.1001284122467041,
+      "status": "defect",
+      "seconds": 0.04329645819962025
+    },
+    {
+      "index": 3,
+      "truth": 0,
+      "predicted": 0,
+      "score": 0.998001217842102,
+      "gap": 0.04685860872268677,
+      "status": "normal",
+      "seconds": 0.0375407082028687
+    },
+    {
+      "index": 4,
+      "truth": 3,
+      "predicted": 3,
+      "score": 0.9983577728271484,
+      "gap": 0.042905986309051514,
+      "status": "defect",
+      "seconds": 0.03948875004425645
+    },
+    {
+      "index": 5,
+      "truth": 7,
+      "predicted": 7,
+      "score": 0.998284637928009,
+      "gap": 0.04769819974899292,
+      "status": "defect",
+      "seconds": 0.038075207732617855
+    },
+    {
+      "index": 6,
+      "truth": 2,
+      "predicted": 2,
+      "score": 0.9988301992416382,
+      "gap": 0.084442138671875,
+      "status": "defect",
+      "seconds": 0.04157266579568386
+    },
+    {
+      "index": 7,
+      "truth": 5,
+      "predicted": 5,
+      "score": 0.9982874393463135,
+      "gap": 0.0803685188293457,
+      "status": "defect",
+      "seconds": 0.04047004133462906
+    },
+    {
+      "index": 8,
+      "truth": 0,
+      "predicted": 0,
+      "score": 0.997888445854187,
+      "gap": 0.04661130905151367,
+      "status": "normal",
+      "seconds": 0.03799587534740567
+    },
+    {
+      "index": 9,
+      "truth": 1,
+      "predicted": 1,
+      "score": 0.9972244501113892,
+      "gap": 0.04399442672729492,
+      "status": "normal",
+      "seconds": 0.04071450000628829
+    },
+    {
+      "index": 10,
+      "truth": 7,
+      "predicted": 7,
+      "score": 0.9985522031784058,
+      "gap": 0.04776144027709961,
+      "status": "defect",
+      "seconds": 0.037675957661122084
+    },
+    {
+      "index": 11,
+      "truth": 4,
+      "predicted": 4,
+      "score": 0.9903960227966309,
+      "gap": 0.0803866982460022,
+      "status": "defect",
+      "seconds": 0.03795337537303567
+    },
+    {
+      "index": 12,
+      "truth": 5,
+      "predicted": 5,
+      "score": 0.9982677698135376,
+      "gap": 0.08058267831802368,
+      "status": "defect",
+      "seconds": 0.03869508299976587
+    },
+    {
+      "index": 13,
+      "truth": 6,
+      "predicted": 6,
+      "score": 0.9960548877716064,
+      "gap": 0.09918677806854248,
+      "status": "defect",
+      "seconds": 0.039243292063474655
+    },
+    {
+      "index": 14,
+      "truth": 3,
+      "predicted": 3,
+      "score": 0.9982280731201172,
+      "gap": 0.04251539707183838,
+      "status": "defect",
+      "seconds": 0.04186704196035862
+    },
+    {
+      "index": 15,
+      "truth": 2,
+      "predicted": 2,
+      "score": 0.9987210035324097,
+      "gap": 0.0841713547706604,
+      "status": "defect",
+      "seconds": 0.04784583393484354
+    },
+    {
+      "index": 16,
+      "truth": 6,
+      "predicted": 6,
+      "score": 0.9966817498207092,
+      "gap": 0.09882515668869019,
+      "status": "defect",
+      "seconds": 0.057722208090126514
+    },
+    {
+      "index": 17,
+      "truth": 2,
+      "predicted": 2,
+      "score": 0.9988157153129578,
+      "gap": 0.08380019664764404,
+      "status": "defect",
+      "seconds": 0.03942412510514259
+    },
+    {
+      "index": 18,
+      "truth": 4,
+      "predicted": 4,
+      "score": 0.9906619787216187,
+      "gap": 0.07972711324691772,
+      "status": "defect",
+      "seconds": 0.05354941729456186
+    },
+    {
+      "index": 19,
+      "truth": 5,
+      "predicted": 5,
+      "score": 0.9983839392662048,
+      "gap": 0.08086389303207397,
+      "status": "defect",
+      "seconds": 0.04096362506970763
+    },
+    {
+      "index": 20,
+      "truth": 1,
+      "predicted": 1,
+      "score": 0.9968909621238708,
+      "gap": 0.043081581592559814,
+      "status": "normal",
+      "seconds": 0.037820374593138695
+    },
+    {
+      "index": 21,
+      "truth": 3,
+      "predicted": 3,
+      "score": 0.9984817504882812,
+      "gap": 0.042796552181243896,
+      "status": "defect",
+      "seconds": 0.05439995788037777
+    },
+    {
+      "index": 22,
+      "truth": 7,
+      "predicted": 7,
+      "score": 0.9985769987106323,
+      "gap": 0.0475994348526001,
+      "status": "defect",
+      "seconds": 0.03734604176133871
+    },
+    {
+      "index": 23,
+      "truth": 0,
+      "predicted": 0,
+      "score": 0.9977590441703796,
+      "gap": 0.04644155502319336,
+      "status": "normal",
+      "seconds": 0.03724483260884881
+    },
+    {
+      "index": 24,
+      "truth": 2,
+      "predicted": 2,
+      "score": 0.9987826347351074,
+      "gap": 0.0835956335067749,
+      "status": "defect",
+      "seconds": 0.03869512490928173
+    },
+    {
+      "index": 25,
+      "truth": 7,
+      "predicted": 7,
+      "score": 0.9985578060150146,
+      "gap": 0.04729962348937988,
+      "status": "defect",
+      "seconds": 0.0479075419716537
+    },
+    {
+      "index": 26,
+      "truth": 3,
+      "predicted": 3,
+      "score": 0.9984414577484131,
+      "gap": 0.043378472328186035,
+      "status": "defect",
+      "seconds": 0.039859000127762556
+    },
+    {
+      "index": 27,
+      "truth": 6,
+      "predicted": 6,
+      "score": 0.9961863160133362,
+      "gap": 0.09824687242507935,
+      "status": "defect",
+      "seconds": 0.03174937516450882
+    },
+    {
+      "index": 28,
+      "truth": 0,
+      "predicted": 0,
+      "score": 0.9973121881484985,
+      "gap": 0.04614603519439697,
+      "status": "normal",
+      "seconds": 0.030665500089526176
+    },
+    {
+      "index": 29,
+      "truth": 1,
+      "predicted": 1,
+      "score": 0.9943172931671143,
+      "gap": 0.043581366539001465,
+      "status": "normal",
+      "seconds": 0.030284416861832142
+    },
+    {
+      "index": 30,
+      "truth": 4,
+      "predicted": 4,
+      "score": 0.990215539932251,
+      "gap": 0.08027374744415283,
+      "status": "defect",
+      "seconds": 0.030261041596531868
+    },
+    {
+      "index": 31,
+      "truth": 5,
+      "predicted": 5,
+      "score": 0.9980667233467102,
+      "gap": 0.08085918426513672,
+      "status": "defect",
+      "seconds": 0.029627209063619375
+    }
+  ]
+}

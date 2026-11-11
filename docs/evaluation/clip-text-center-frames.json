@@ -1,0 +1,1042 @@
+{
+  "scope": "CPU diagnostic replay of 32 exact center frames, not GPU/NPU runtime measurement; browser crop interpolation approximated with Pillow",
+  "coldSessionSeconds": 1.0169702908024192,
+  "rows": [
+    {
+      "index": 0,
+      "truth": 4,
+      "label": "표면 긁힘",
+      "roi": {
+        "x": 398.08,
+        "y": 80.07999999999998,
+        "size": 483.84000000000003,
+        "bbox": [
+          489,
+          133,
+          302,
+          378
+        ],
+        "centerX": 640.0,
+        "detected": true
+      },
+      "current": {
+        "predicted": 0,
+        "topLabel": "정상 A",
+        "score": 0.7757700681686401,
+        "status": "normal",
+        "seconds": 0.22377670789137483
+      },
+      "isolated": {
+        "predicted": 0,
+        "topLabel": "정상 A",
+        "score": 0.6653987169265747,
+        "status": "normal",
+        "seconds": 0.19354862486943603
+      }
+    },
+    {
+      "index": 1,
+      "truth": 1,
+      "label": "정상 B",
+      "roi": {
+        "x": 398.08,
+        "y": 80.07999999999998,
+        "size": 483.84000000000003,
+        "bbox": [
+          489,
+          133,
+          302,
+          378
+        ],
+        "centerX": 640.0,
+        "detected": true
+      },
+      "current": {
+        "predicted": 1,
+        "topLabel": "정상 B",
+        "score": 0.5709343552589417,
+        "status": "normal",
+        "seconds": 0.18708945903927088
+      },
+      "isolated": {
+        "predicted": 1,
+        "topLabel": "정상 B",
+        "score": 0.5033789873123169,
+        "status": "normal",
+        "seconds": 0.19065295904874802
+      }
+    },
+    {
+      "index": 2,
+      "truth": 6,
+      "label": "형상 변형",
+      "roi": {
+        "x": 417.56,
+        "y": 84.56,
+        "size": 442.88,
+        "bbox": [
+          485,
+          133,
+          308,
+          346
+        ],
+        "centerX": 639.0,
+        "detected": true
+      },
+      "current": {
+        "predicted": 1,
+        "topLabel": "정상 B",
+        "score": 0.3376806676387787,
+        "status": "normal",
+        "seconds": 0.18727270793169737
+      },
+      "isolated": {
+        "predicted": 6,
+        "topLabel": "형상 변형",
+        "score": 0.48973503708839417,
+        "status": "defect",
+        "seconds": 0.18133991677314043
+      }
+    },
+    {
+      "index": 3,
+      "truth": 0,
+      "label": "정상 A",
+      "roi": {
+        "x": 398.08,
+        "y": 80.07999999999998,
+        "size": 483.84000000000003,
+        "bbox": [
+          489,
+          133,
+          302,
+          378
+        ],
+        "centerX": 640.0,
+        "detected": true
+      },
+      "current": {
+        "predicted": 1,
+        "topLabel": "정상 B",
+        "score": 0.5084807276725769,
+        "status": "normal",
+        "seconds": 0.18049079133197665
+      },
+      "isolated": {
+        "predicted": 1,
+        "topLabel": "정상 B",
+        "score": 0.42330870032310486,
+        "status": "normal",
+        "seconds": 0.18324395921081305
+      }
+    },
+    {
+      "index": 4,
+      "truth": 3,
+      "label": "가장자리 깨짐",
+      "roi": {
+        "x": 398.08,
+        "y": 80.07999999999998,
+        "size": 483.84000000000003,
+        "bbox": [
+          489,
+          133,
+          302,
+          378
+        ],
+        "centerX": 640.0,
+        "detected": true
+      },
+      "current": {
+        "predicted": 7,
+        "topLabel": "핀홀",
+        "score": 0.2862298786640167,
+        "status": "review",
+        "seconds": 0.18211366701871157
+      },
+      "isolated": {
+        "predicted": 0,
+        "topLabel": "정상 A",
+        "score": 0.3791661262512207,
+        "status": "normal",
+        "seconds": 0.18144675018265843
+      }
+    },
+    {
+      "index": 5,
+      "truth": 7,
+      "label": "핀홀",
+      "roi": {
+        "x": 398.08,
+        "y": 80.07999999999998,
+        "size": 483.84000000000003,
+        "bbox": [
+          489,
+          133,
+          302,
+          378
+        ],
+        "centerX": 640.0,
+        "detected": true
+      },
+      "current": {
+        "predicted": 7,
+        "topLabel": "핀홀",
+        "score": 0.5613540410995483,
+        "status": "defect",
+        "seconds": 0.17929116636514664
+      },
+      "isolated": {
+        "predicted": 0,
+        "topLabel": "정상 A",
+        "score": 0.39691853523254395,
+        "status": "normal",
+        "seconds": 0.17854666570201516
+      }
+    },
+    {
+      "index": 6,
+      "truth": 2,
+      "label": "방사형 균열",
+      "roi": {
+        "x": 398.08,
+        "y": 80.07999999999998,
+        "size": 483.84000000000003,
+        "bbox": [
+          489,
+          133,
+          302,
+          378
+        ],
+        "centerX": 640.0,
+        "detected": true
+      },
+      "current": {
+        "predicted": 0,
+        "topLabel": "정상 A",
+        "score": 0.40081343054771423,
+        "status": "normal",
+        "seconds": 0.1799560827203095
+      },
+      "isolated": {
+        "predicted": 0,
+        "topLabel": "정상 A",
+        "score": 0.9086046814918518,
+        "status": "normal",
+        "seconds": 0.18252254091203213
+      }
+    },
+    {
+      "index": 7,
+      "truth": 5,
+      "label": "이물 오염",
+      "roi": {
+        "x": 398.08,
+        "y": 80.07999999999998,
+        "size": 483.84000000000003,
+        "bbox": [
+          489,
+          133,
+          302,
+          378
+        ],
+        "centerX": 640.0,
+        "detected": true
+      },
+      "current": {
+        "predicted": 0,
+        "topLabel": "정상 A",
+        "score": 0.5557944178581238,
+        "status": "normal",
+        "seconds": 0.1809447081759572
+      },
+      "isolated": {
+        "predicted": 0,
+        "topLabel": "정상 A",
+        "score": 0.6972112655639648,
+        "status": "normal",
+        "seconds": 0.1793232918716967
+      }
+    },
+    {
+      "index": 8,
+      "truth": 0,
+      "label": "정상 A",
+      "roi": {
+        "x": 398.08,
+        "y": 80.07999999999998,
+        "size": 483.84000000000003,
+        "bbox": [
+          489,
+          133,
+          302,
+          378
+        ],
+        "centerX": 640.0,
+        "detected": true
+      },
+      "current": {
+        "predicted": 1,
+        "topLabel": "정상 B",
+        "score": 0.5049309134483337,
+        "status": "normal",
+        "seconds": 0.17949170898646116
+      },
+      "isolated": {
+        "predicted": 1,
+        "topLabel": "정상 B",
+        "score": 0.4249550402164459,
+        "status": "normal",
+        "seconds": 0.17949741706252098
+      }
+    },
+    {
+      "index": 9,
+      "truth": 1,
+      "label": "정상 B",
+      "roi": {
+        "x": 398.08,
+        "y": 80.07999999999998,
+        "size": 483.84000000000003,
+        "bbox": [
+          489,
+          133,
+          302,
+          378
+        ],
+        "centerX": 640.0,
+        "detected": true
+      },
+      "current": {
+        "predicted": 1,
+        "topLabel": "정상 B",
+        "score": 0.5629221796989441,
+        "status": "normal",
+        "seconds": 0.1809305832721293
+      },
+      "isolated": {
+        "predicted": 1,
+        "topLabel": "정상 B",
+        "score": 0.5007020235061646,
+        "status": "normal",
+        "seconds": 0.18008770793676376
+      }
+    },
+    {
+      "index": 10,
+      "truth": 7,
+      "label": "핀홀",
+      "roi": {
+        "x": 398.08,
+        "y": 80.07999999999998,
+        "size": 483.84000000000003,
+        "bbox": [
+          489,
+          133,
+          302,
+          378
+        ],
+        "centerX": 640.0,
+        "detected": true
+      },
+      "current": {
+        "predicted": 7,
+        "topLabel": "핀홀",
+        "score": 0.5514596104621887,
+        "status": "defect",
+        "seconds": 0.17878495808690786
+      },
+      "isolated": {
+        "predicted": 0,
+        "topLabel": "정상 A",
+        "score": 0.40099412202835083,
+        "status": "normal",
+        "seconds": 0.17830120865255594
+      }
+    },
+    {
+      "index": 11,
+      "truth": 4,
+      "label": "표면 긁힘",
+      "roi": {
+        "x": 398.08,
+        "y": 80.07999999999998,
+        "size": 483.84000000000003,
+        "bbox": [
+          489,
+          133,
+          302,
+          378
+        ],
+        "centerX": 640.0,
+        "detected": true
+      },
+      "current": {
+        "predicted": 0,
+        "topLabel": "정상 A",
+        "score": 0.7096239924430847,
+        "status": "normal",
+        "seconds": 0.18746337480843067
+      },
+      "isolated": {
+        "predicted": 0,
+        "topLabel": "정상 A",
+        "score": 0.7053309082984924,
+        "status": "normal",
+        "seconds": 0.18004845827817917
+      }
+    },
+    {
+      "index": 12,
+      "truth": 5,
+      "label": "이물 오염",
+      "roi": {
+        "x": 398.08,
+        "y": 80.07999999999998,
+        "size": 483.84000000000003,
+        "bbox": [
+          489,
+          133,
+          302,
+          378
+        ],
+        "centerX": 640.0,
+        "detected": true
+      },
+      "current": {
+        "predicted": 0,
+        "topLabel": "정상 A",
+        "score": 0.5562186241149902,
+        "status": "normal",
+        "seconds": 0.1868539173156023
+      },
+      "isolated": {
+        "predicted": 0,
+        "topLabel": "정상 A",
+        "score": 0.7084539532661438,
+        "status": "normal",
+        "seconds": 0.1807990837842226
+      }
+    },
+    {
+      "index": 13,
+      "truth": 6,
+      "label": "형상 변형",
+      "roi": {
+        "x": 417.56,
+        "y": 84.56,
+        "size": 442.88,
+        "bbox": [
+          485,
+          133,
+          308,
+          346
+        ],
+        "centerX": 639.0,
+        "detected": true
+      },
+      "current": {
+        "predicted": 1,
+        "topLabel": "정상 B",
+        "score": 0.33138975501060486,
+        "status": "normal",
+        "seconds": 0.20220824982970953
+      },
+      "isolated": {
+        "predicted": 6,
+        "topLabel": "형상 변형",
+        "score": 0.4901059865951538,
+        "status": "defect",
+        "seconds": 0.18340158322826028
+      }
+    },
+    {
+      "index": 14,
+      "truth": 3,
+      "label": "가장자리 깨짐",
+      "roi": {
+        "x": 398.08,
+        "y": 80.07999999999998,
+        "size": 483.84000000000003,
+        "bbox": [
+          489,
+          133,
+          302,
+          378
+        ],
+        "centerX": 640.0,
+        "detected": true
+      },
+      "current": {
+        "predicted": 7,
+        "topLabel": "핀홀",
+        "score": 0.28849610686302185,
+        "status": "review",
+        "seconds": 0.18506516702473164
+      },
+      "isolated": {
+        "predicted": 0,
+        "topLabel": "정상 A",
+        "score": 0.3961081802845001,
+        "status": "normal",
+        "seconds": 0.18244854174554348
+      }
+    },
+    {
+      "index": 15,
+      "truth": 2,
+      "label": "방사형 균열",
+      "roi": {
+        "x": 398.08,
+        "y": 80.07999999999998,
+        "size": 483.84000000000003,
+        "bbox": [
+          489,
+          133,
+          302,
+          378
+        ],
+        "centerX": 640.0,
+        "detected": true
+      },
+      "current": {
+        "predicted": 0,
+        "topLabel": "정상 A",
+        "score": 0.4034782350063324,
+        "status": "normal",
+        "seconds": 0.18072391720488667
+      },
+      "isolated": {
+        "predicted": 0,
+        "topLabel": "정상 A",
+        "score": 0.9095962643623352,
+        "status": "normal",
+        "seconds": 0.17907933285459876
+      }
+    },
+    {
+      "index": 16,
+      "truth": 6,
+      "label": "형상 변형",
+      "roi": {
+        "x": 417.56,
+        "y": 84.56,
+        "size": 442.88,
+        "bbox": [
+          485,
+          133,
+          308,
+          346
+        ],
+        "centerX": 639.0,
+        "detected": true
+      },
+      "current": {
+        "predicted": 1,
+        "topLabel": "정상 B",
+        "score": 0.3379628360271454,
+        "status": "normal",
+        "seconds": 0.1793501670472324
+      },
+      "isolated": {
+        "predicted": 6,
+        "topLabel": "형상 변형",
+        "score": 0.47635599970817566,
+        "status": "defect",
+        "seconds": 0.1905645001679659
+      }
+    },
+    {
+      "index": 17,
+      "truth": 2,
+      "label": "방사형 균열",
+      "roi": {
+        "x": 398.08,
+        "y": 80.07999999999998,
+        "size": 483.84000000000003,
+        "bbox": [
+          489,
+          133,
+          302,
+          378
+        ],
+        "centerX": 640.0,
+        "detected": true
+      },
+      "current": {
+        "predicted": 0,
+        "topLabel": "정상 A",
+        "score": 0.4091469943523407,
+        "status": "normal",
+        "seconds": 0.2057252498343587
+      },
+      "isolated": {
+        "predicted": 0,
+        "topLabel": "정상 A",
+        "score": 0.9080736041069031,
+        "status": "normal",
+        "seconds": 0.19712770776823163
+      }
+    },
+    {
+      "index": 18,
+      "truth": 4,
+      "label": "표면 긁힘",
+      "roi": {
+        "x": 398.08,
+        "y": 80.07999999999998,
+        "size": 483.84000000000003,
+        "bbox": [
+          489,
+          133,
+          302,
+          378
+        ],
+        "centerX": 640.0,
+        "detected": true
+      },
+      "current": {
+        "predicted": 0,
+        "topLabel": "정상 A",
+        "score": 0.7042436003684998,
+        "status": "normal",
+        "seconds": 0.18435720819979906
+      },
+      "isolated": {
+        "predicted": 0,
+        "topLabel": "정상 A",
+        "score": 0.694205105304718,
+        "status": "normal",
+        "seconds": 0.18438887456431985
+      }
+    },
+    {
+      "index": 19,
+      "truth": 5,
+      "label": "이물 오염",
+      "roi": {
+        "x": 398.08,
+        "y": 80.07999999999998,
+        "size": 483.84000000000003,
+        "bbox": [
+          489,
+          133,
+          302,
+          378
+        ],
+        "centerX": 640.0,
+        "detected": true
+      },
+      "current": {
+        "predicted": 0,
+        "topLabel": "정상 A",
+        "score": 0.5492165684700012,
+        "status": "normal",
+        "seconds": 0.19763070764020085
+      },
+      "isolated": {
+        "predicted": 0,
+        "topLabel": "정상 A",
+        "score": 0.7025361657142639,
+        "status": "normal",
+        "seconds": 0.20786020811647177
+      }
+    },
+    {
+      "index": 20,
+      "truth": 1,
+      "label": "정상 B",
+      "roi": {
+        "x": 398.08,
+        "y": 80.07999999999998,
+        "size": 483.84000000000003,
+        "bbox": [
+          489,
+          133,
+          302,
+          378
+        ],
+        "centerX": 640.0,
+        "detected": true
+      },
+      "current": {
+        "predicted": 1,
+        "topLabel": "정상 B",
+        "score": 0.5700205564498901,
+        "status": "normal",
+        "seconds": 0.19470479059964418
+      },
+      "isolated": {
+        "predicted": 1,
+        "topLabel": "정상 B",
+        "score": 0.5046390295028687,
+        "status": "normal",
+        "seconds": 0.18459745775908232
+      }
+    },
+    {
+      "index": 21,
+      "truth": 3,
+      "label": "가장자리 깨짐",
+      "roi": {
+        "x": 398.08,
+        "y": 80.07999999999998,
+        "size": 483.84000000000003,
+        "bbox": [
+          489,
+          133,
+          302,
+          378
+        ],
+        "centerX": 640.0,
+        "detected": true
+      },
+      "current": {
+        "predicted": 7,
+        "topLabel": "핀홀",
+        "score": 0.2900646924972534,
+        "status": "review",
+        "seconds": 0.19926483323797584
+      },
+      "isolated": {
+        "predicted": 0,
+        "topLabel": "정상 A",
+        "score": 0.39124998450279236,
+        "status": "normal",
+        "seconds": 0.1866438747383654
+      }
+    },
+    {
+      "index": 22,
+      "truth": 7,
+      "label": "핀홀",
+      "roi": {
+        "x": 398.08,
+        "y": 80.07999999999998,
+        "size": 483.84000000000003,
+        "bbox": [
+          489,
+          133,
+          302,
+          378
+        ],
+        "centerX": 640.0,
+        "detected": true
+      },
+      "current": {
+        "predicted": 7,
+        "topLabel": "핀홀",
+        "score": 0.5664750933647156,
+        "status": "defect",
+        "seconds": 0.184236166998744
+      },
+      "isolated": {
+        "predicted": 0,
+        "topLabel": "정상 A",
+        "score": 0.39257732033729553,
+        "status": "normal",
+        "seconds": 0.18411166686564684
+      }
+    },
+    {
+      "index": 23,
+      "truth": 0,
+      "label": "정상 A",
+      "roi": {
+        "x": 398.08,
+        "y": 80.07999999999998,
+        "size": 483.84000000000003,
+        "bbox": [
+          489,
+          133,
+          302,
+          378
+        ],
+        "centerX": 640.0,
+        "detected": true
+      },
+      "current": {
+        "predicted": 1,
+        "topLabel": "정상 B",
+        "score": 0.5063435435295105,
+        "status": "normal",
+        "seconds": 0.1830108747817576
+      },
+      "isolated": {
+        "predicted": 1,
+        "topLabel": "정상 B",
+        "score": 0.4284162223339081,
+        "status": "normal",
+        "seconds": 0.18256729235872626
+      }
+    },
+    {
+      "index": 24,
+      "truth": 2,
+      "label": "방사형 균열",
+      "roi": {
+        "x": 398.08,
+        "y": 80.07999999999998,
+        "size": 483.84000000000003,
+        "bbox": [
+          489,
+          133,
+          302,
+          378
+        ],
+        "centerX": 640.0,
+        "detected": true
+      },
+      "current": {
+        "predicted": 0,
+        "topLabel": "정상 A",
+        "score": 0.4028264284133911,
+        "status": "normal",
+        "seconds": 0.19055862491950393
+      },
+      "isolated": {
+        "predicted": 0,
+        "topLabel": "정상 A",
+        "score": 0.9079745411872864,
+        "status": "normal",
+        "seconds": 0.18580991588532925
+      }
+    },
+    {
+      "index": 25,
+      "truth": 7,
+      "label": "핀홀",
+      "roi": {
+        "x": 398.08,
+        "y": 80.07999999999998,
+        "size": 483.84000000000003,
+        "bbox": [
+          489,
+          133,
+          302,
+          378
+        ],
+        "centerX": 640.0,
+        "detected": true
+      },
+      "current": {
+        "predicted": 7,
+        "topLabel": "핀홀",
+        "score": 0.5485114455223083,
+        "status": "defect",
+        "seconds": 0.18587708286941051
+      },
+      "isolated": {
+        "predicted": 0,
+        "topLabel": "정상 A",
+        "score": 0.3884282112121582,
+        "status": "normal",
+        "seconds": 0.18675708398222923
+      }
+    },
+    {
+      "index": 26,
+      "truth": 3,
+      "label": "가장자리 깨짐",
+      "roi": {
+        "x": 398.08,
+        "y": 80.07999999999998,
+        "size": 483.84000000000003,
+        "bbox": [
+          489,
+          133,
+          302,
+          378
+        ],
+        "centerX": 640.0,
+        "detected": true
+      },
+      "current": {
+        "predicted": 7,
+        "topLabel": "핀홀",
+        "score": 0.286155104637146,
+        "status": "review",
+        "seconds": 0.35640524979680777
+      },
+      "isolated": {
+        "predicted": 0,
+        "topLabel": "정상 A",
+        "score": 0.3991445302963257,
+        "status": "normal",
+        "seconds": 0.18725225003436208
+      }
+    },
+    {
+      "index": 27,
+      "truth": 6,
+      "label": "형상 변형",
+      "roi": {
+        "x": 417.56,
+        "y": 84.56,
+        "size": 442.88,
+        "bbox": [
+          485,
+          133,
+          308,
+          346
+        ],
+        "centerX": 639.0,
+        "detected": true
+      },
+      "current": {
+        "predicted": 1,
+        "topLabel": "정상 B",
+        "score": 0.3320285677909851,
+        "status": "normal",
+        "seconds": 0.19556308398023248
+      },
+      "isolated": {
+        "predicted": 6,
+        "topLabel": "형상 변형",
+        "score": 0.4739184081554413,
+        "status": "defect",
+        "seconds": 0.18493262492120266
+      }
+    },
+    {
+      "index": 28,
+      "truth": 0,
+      "label": "정상 A",
+      "roi": {
+        "x": 398.08,
+        "y": 80.07999999999998,
+        "size": 483.84000000000003,
+        "bbox": [
+          489,
+          133,
+          302,
+          378
+        ],
+        "centerX": 640.0,
+        "detected": true
+      },
+      "current": {
+        "predicted": 1,
+        "topLabel": "정상 B",
+        "score": 0.5080192685127258,
+        "status": "normal",
+        "seconds": 0.18477887474000454
+      },
+      "isolated": {
+        "predicted": 1,
+        "topLabel": "정상 B",
+        "score": 0.42733079195022583,
+        "status": "normal",
+        "seconds": 0.18499149987474084
+      }
+    },
+    {
+      "index": 29,
+      "truth": 1,
+      "label": "정상 B",
+      "roi": {
+        "x": 398.08,
+        "y": 80.07999999999998,
+        "size": 483.84000000000003,
+        "bbox": [
+          489,
+          133,
+          302,
+          378
+        ],
+        "centerX": 640.0,
+        "detected": true
+      },
+      "current": {
+        "predicted": 1,
+        "topLabel": "정상 B",
+        "score": 0.5778940916061401,
+        "status": "normal",
+        "seconds": 0.18602729169651866
+      },
+      "isolated": {
+        "predicted": 1,
+        "topLabel": "정상 B",
+        "score": 0.5021364092826843,
+        "status": "normal",
+        "seconds": 0.18747287523001432
+      }
+    },
+    {
+      "index": 30,
+      "truth": 4,
+      "label": "표면 긁힘",
+      "roi": {
+        "x": 398.08,
+        "y": 80.07999999999998,
+        "size": 483.84000000000003,
+        "bbox": [
+          489,
+          133,
+          302,
+          378
+        ],
+        "centerX": 640.0,
+        "detected": true
+      },
+      "current": {
+        "predicted": 0,
+        "topLabel": "정상 A",
+        "score": 0.6941149830818176,
+        "status": "normal",
+        "seconds": 0.186190125066787
+      },
+      "isolated": {
+        "predicted": 0,
+        "topLabel": "정상 A",
+        "score": 0.7028963565826416,
+        "status": "normal",
+        "seconds": 0.18498704209923744
+      }
+    },
+    {
+      "index": 31,
+      "truth": 5,
+      "label": "이물 오염",
+      "roi": {
+        "x": 398.08,
+        "y": 80.07999999999998,
+        "size": 483.84000000000003,
+        "bbox": [
+          489,
+          133,
+          302,
+          378
+        ],
+        "centerX": 640.0,
+        "detected": true
+      },
+      "current": {
+        "predicted": 0,
+        "topLabel": "정상 A",
+        "score": 0.5610436797142029,
+        "status": "normal",
+        "seconds": 0.18733458314090967
+      },
+      "isolated": {
+        "predicted": 0,
+        "topLabel": "정상 A",
+        "score": 0.7096134424209595,
+        "status": "normal",
+        "seconds": 0.19980462500825524
+      }
+    }
+  ],
+  "current": {
+    "top1Correct": 8,
+    "binaryCorrect": 12,
+    "review": 4,
+    "medianInferenceSeconds": 0.1859521872829646
+  },
+  "isolated": {
+    "top1Correct": 8,
+    "binaryCorrect": 12,
+    "review": 0,
+    "medianInferenceSeconds": 0.18425027071498334
+  }
+}

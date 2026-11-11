@@ -1,3 +1,6 @@
+import { LineTracker, InspectionQueue } from './inspection-queue.js';
+import { targetBounds } from './target-region.js';
+import { decideReference } from './reference-decision.js';
 import { PassageCounter } from './counting.js';
 import { pixels, trainSiamese } from './siamese.js';
 let siamese = null;
@@ -55,6 +58,12 @@ const state = {
   counter: null,
   videoTimer: null,
   videoBusy: false,
+  runVersion: 0,
+  queue: null,
+  frameHandle: null,
+  inputEnded: false,
+  skipped: [],
+  processedFrames: 0,
   classifier: null,
   modelLoading: false,
   analyzing: false,
@@ -150,6 +159,14 @@ async function startCamera() {
 }
 
 function stopCamera() {
+  state.runVersion++;
+  state.queue?.cancel(); state.queue=null;
+  if(state.frameHandle!==null){
+    if(els.camera.cancelVideoFrameCallback)els.camera.cancelVideoFrameCallback(state.frameHandle);
+    else cancelAnimationFrame(state.frameHandle);
+  }
+  state.frameHandle=null;
+  for(const id of ['engineSelect','acceleratorSelect','buildReferenceDB','trainSiamese','analyzeButton','autoToggle','threshold','margin','referenceMinimum','referenceMargin']) $('#'+id).disabled=false;
   clearInterval(state.videoTimer);
   state.videoTimer = null;
   state.videoInput = false;
@@ -179,11 +196,14 @@ function updateSettingOutputs() {
 }
 
 async function nativeRequest(action, extra = {}) {
+  const requestVersion=state.runVersion;
   const response = await fetch('/api/accelerator', {method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({action,backend:$('#acceleratorSelect').value,...extra})});
   const data = await response.json();
   if (!response.ok) throw new Error(data.error || '가속기 실행 실패');
+  if (data.provider && requestVersion===state.runVersion) {
   state.lastInference = {provider:data.provider,model:data.model,backend:$('#acceleratorSelect').value,cpuFallback:data.cpuFallback};
   $('#acceleratorStatus').textContent = `${data.provider} · ${data.model} · CPU 대체 없음`;
+  }
   return data;
 }
 
@@ -240,6 +260,9 @@ function detectTarget(source) {
       if (lum < 205) { minX = Math.min(minX, x); minY = Math.min(minY, y); maxX = Math.max(maxX, x); maxY = Math.max(maxY, y); }
     }
   }
+  const component = targetBounds(image.data, side, stride);
+  if (component) ({minX,minY,maxX,maxY} = component);
+  else {minX=side;minY=side;maxX=maxY=0;}
   const mean = sum / count;
   const contrast = Math.sqrt(Math.max(0, sumSq / count - mean * mean));
   let bboxW = maxX - minX;
@@ -284,6 +307,39 @@ function rehearsalScores(expectedId) {
   return state.db.classes.map((item, index) => ({ item, score: raw[index] / total }));
 }
 
+async function referenceScores() {
+  const output = await nativeRequest('match_references',{image:els.roiPreview.toDataURL('image/png'),classes:state.db.classes});
+  $('#referenceStatus').textContent = `저장된 기준 DB 사용 · ${output.referenceCreatedAt} · 코사인 유사도`;
+  return state.db.classes.map((item,index)=>({item,score:output.scores[index]})).sort((a,b)=>b.score-a.score);
+}
+
+async function buildReferenceDB() {
+  if (state.analyzing || state.videoBusy) return;
+  const button=$('#buildReferenceDB');button.disabled=true;
+  stopCamera();els.autoToggle.checked=false;updateAuto();
+  $('#referenceStatus').textContent='8개 기준 이미지를 인코딩하고 JSON DB에 저장 중…';
+  try {
+    const references=[];
+    for(const item of state.db.classes) {
+      const img=new Image();img.src=item.asset;await img.decode();
+      const canvas=document.createElement('canvas');canvas.width=canvas.height=512;
+      const ctx=canvas.getContext('2d');ctx.fillStyle='white';ctx.fillRect(0,0,512,512);ctx.drawImage(img,128,128,256,256);
+      references.push({id:item.id,labelKo:item.labelKo,group:item.group,image:prepareSiamese(canvas).toDataURL('image/png')});
+    }
+    const output=await nativeRequest('prepare_references',{references});
+    $('#referenceStatus').textContent=`JSON DB 저장 완료 · ${output.count}개 · ${output.provider}`;
+  } catch(error) { $('#referenceStatus').textContent=`DB 생성 실패: ${error.message}`; }
+  finally {button.disabled=false;}
+}
+$('#buildReferenceDB').addEventListener('click',buildReferenceDB);
+$('#exportReferenceDB').addEventListener('click',async()=>{
+ try {
+  const db=await nativeRequest('export_references');
+  const url=URL.createObjectURL(new Blob([JSON.stringify(db,null,2)],{type:'application/json'}));
+  const a=document.createElement('a');a.href=url;a.download='reference-embeddings.json';a.click();URL.revokeObjectURL(url);
+ } catch(error){$('#referenceStatus').textContent=error.message;}
+});
+
 async function clipScores() {
   const output = await nativeRequest('clip',{image:els.roiPreview.toDataURL('image/png'),classes:state.db.classes});
   return state.db.classes.map((item,index)=>({item,score:output.scores[index]})).sort((a,b)=>b.score-a.score);
@@ -321,18 +377,20 @@ function renderDecision(result, elapsed, stableText = "") {
   els.latency.textContent = `${elapsed} ms`;
 }
 
-async function saveDefect(result, roi, mode) {
+async function saveDefect(result, roi, mode, capture = null) {
   const now = Date.now();
   const key = result.best.item.id;
-  if (state.lastSavedKey === key && now - state.lastSavedAt < 5000) return;
+  if (!capture && state.lastSavedKey === key && now - state.lastSavedAt < 5000) return;
   const record = {
     verdict: "defect",
+    capture,
     defectId: key,
     labelKo: result.best.item.labelKo,
     score: Number(result.best.score.toFixed(6)),
     normalScore: Number(result.bestNormal.score.toFixed(6)),
-    threshold: Number(els.threshold.value),
-    margin: Number(els.margin.value),
+    metric: mode === 'clip-reference' ? 'cosine' : 'relative-score',
+    threshold: Number(mode === 'clip-reference' ? $('#referenceMinimum').value : els.threshold.value),
+    margin: Number(mode === 'clip-reference' ? $('#referenceMargin').value : els.margin.value),
     engine: mode,
     inference: state.lastInference,
     roi: { diameterPx: roi.diameterPx, contrast: roi.contrast },
@@ -344,23 +402,24 @@ async function saveDefect(result, roi, mode) {
   await loadHistory();
 }
 
-async function analyze({ auto = false } = {}) {
+async function analyze({ auto = false, source: captured = null, capture = null, runVersion = state.runVersion } = {}) {
   if (state.analyzing) return;
   state.analyzing = true;
   try {
     setStep(1);
-    const source = sourceToCanvas();
+    const source = captured || sourceToCanvas();
     const roi = detectTarget(source);
     drawRoi(source, roi);
-    await sleep(120);
     setStep(2);
     const started = performance.now();
     const mode = els.engineSelect.value;
     if (mode === "rehearsal" && !state.selectedSample) throw new Error("리허설 모드는 아래 표본을 먼저 선택하세요.");
-    const scores = mode === "rehearsal" ? rehearsalScores(state.selectedSample?.id).sort((a, b) => b.score - a.score) : mode === 'siamese' ? await siameseScores() : await clipScores();
+    const scores = mode === "rehearsal" ? rehearsalScores(state.selectedSample?.id).sort((a, b) => b.score - a.score) : mode === 'siamese' ? await siameseScores() : mode === 'clip-reference' ? await referenceScores() : await clipScores();
+    if(runVersion !== state.runVersion) return null;
     setStep(3);
     renderScores(scores);
-    const result = {...decide(scores), inference:state.lastInference};
+    const decision = mode === 'clip-reference' ? decideReference(scores,Number($('#referenceMinimum').value),Number($('#referenceMargin').value)) : decide(scores);
+    const result = {...decision, inference:state.lastInference, capture};
     const key = `${result.status}:${result.best.item.id}`;
     if (auto) {
       state.stableCount = key === state.lastAutoKey ? state.stableCount + 1 : 1;
@@ -369,13 +428,15 @@ async function analyze({ auto = false } = {}) {
       state.stableCount = state.db.decision.stableFrames;
     }
     const stable = state.stableCount >= state.db.decision.stableFrames;
-    renderDecision(result, Math.round(performance.now() - started), auto ? ` · ${state.stableCount}/${state.db.decision.stableFrames} 프레임` : "");
+    renderDecision(result, Math.round(performance.now() - started), capture ? ` · 표본 #${capture.trackId} · 촬영 ${capture.videoTime.toFixed(2)}초` : auto ? ` · ${state.stableCount}/${state.db.decision.stableFrames} 프레임` : "");
     if (stable) {
       setStep(4);
-      if (result.status === "defect") await saveDefect(result, roi, mode);
+      if (result.status === "defect") await saveDefect(result, roi, mode, capture);
     }
     return result;
   } catch (error) {
+    if(runVersion !== state.runVersion) return null;
+    if(capture) throw error;
     els.signalLamp.className = "signal-lamp review";
     els.verdictLabel.textContent = "실행 오류";
     els.verdictDetail.textContent = error.message;
@@ -426,8 +487,8 @@ els.engineSelect.addEventListener("change", () => {
   stopCamera();
   els.autoToggle.checked = false; updateAuto();
   const mode = els.engineSelect.value;
-  els.engineBadge.textContent = mode === 'clip' ? 'CLIP' : mode === 'siamese' ? 'SIAMESE' : 'REHEARSAL';
-  document.querySelector('.vector-flow').textContent = mode === 'siamese' ? 'ROI · 공유 인코더 f · 기준 이미지 벡터 · 거리 기반 상대 점수' : 'ROI · CLIP · 설명 벡터 · 상대 점수';
+  els.engineBadge.textContent = mode === 'clip-reference' ? 'CLIP 이미지 DB' : mode === 'clip' ? 'CLIP' : mode === 'siamese' ? 'SIAMESE' : 'REHEARSAL';
+  document.querySelector('.vector-flow').textContent = mode === 'clip-reference' ? 'ROI · CLIP 이미지 인코더 · 저장된 기준 이미지 벡터 · 코사인 유사도' : mode === 'siamese' ? 'ROI · 공유 인코더 f · 기준 이미지 벡터 · 거리 기반 상대 점수' : 'ROI · CLIP · 설명 벡터 · 상대 점수';
   resetDecision();
 });
 els.threshold.addEventListener("input", updateSettingOutputs);
@@ -438,6 +499,12 @@ window.addEventListener("beforeunload", stopCamera);
 function renderCount(complete = false) {
   if (!state.counter) return;
   const report = state.counter.report(state.db.classes, complete);
+  report.pending = state.queue?.pending || 0;
+  report.unprocessed = state.skipped;
+  report.processedFrames = state.processedFrames;
+  report.detectedPassages = report.actualTotal + report.pending + state.skipped.length;
+  report.countMatch = report.countMatch && !state.skipped.length;
+  $('#queueStatus').textContent = `감지된 통과 ${report.detectedPassages} · 판정 완료 ${report.actualTotal} · 대기/처리 중 ${report.pending} · 미처리/오류 ${state.skipped.length} · 검사 프레임 ${state.processedFrames}`;
   localStorage.setItem('inspection-last-run', JSON.stringify(report));
   $('#countSummary').textContent = `${complete ? '완료' : '진행 중'} · 통과 ${report.actualTotal}/32 · 확인 필요 ${report.review} · ${complete ? (report.countMatch ? '개수 일치 (정확도 검증과 별개)' : '개수 불일치 — 결과 확인 필요') : '각 종류 정답 4개'}`;
   $('#countRows').textContent = report.counts.map(c => `${c.label}: ${c.actual}/4`).join('  ·  ');
@@ -450,33 +517,54 @@ async function startVideo() {
     if (els.engineSelect.value === 'rehearsal') throw new Error('영상 검사는 CLIP 또는 Siamese를 선택하세요.');
     if (els.engineSelect.value === 'siamese' && !siamese) await trainSharedEncoder();
     if (els.engineSelect.value === 'siamese' && !siamese) throw new Error('Siamese 학습을 완료하지 못했습니다.');
-    if (els.engineSelect.value === 'clip') await loadModel();
-    state.selectedSample = null; state.counter = new PassageCounter();
-    els.camera.srcObject = null;
-    els.camera.src = '/assets/videos/inspection-conveyor-random-4x.mp4';
-    els.camera.loop = false; els.camera.hidden = false; els.sampleImage.hidden = true;
-    state.videoInput = true;
-    await els.camera.play();
-    $('#videoPause').disabled = false; $('#videoPause').textContent = '영상 일시정지';
-    els.fpsBadge.textContent = '로컬 영상 · 32개';
-    els.cameraMessage.textContent = '중앙 통과 시 1회 판정 · 판정 중 영상 잠시 정지';
-    resetDecision(); renderCount();
-    state.videoTimer = setInterval(async () => {
-      if (state.videoBusy || state.analyzing || els.camera.paused || !state.videoInput) return;
-      const source = sourceToCanvas(); const roi = detectTarget(source);
-      if (!state.counter.observe(roi, source.width)) return;
-      state.videoBusy = true; els.camera.pause();
-      const time = els.camera.currentTime;
-      try {
-        const result = await analyze();
-        if (!result) throw new Error(els.verdictDetail.textContent);
-        state.counter.add(result, time); renderCount();
-        if (state.videoInput) await els.camera.play();
-      } catch (error) {
-        els.cameraMessage.textContent = `영상 검사 중지: ${error.message}`;
-        clearInterval(state.videoTimer);
-      } finally { state.videoBusy = false; }
-    }, 80);
+    if (els.engineSelect.value.startsWith('clip')) await loadModel();
+    // Wait for a previous cancelled inference to finish before starting a new queue.
+    if(state.analyzing) throw new Error('이전 판정이 끝난 뒤 다시 시작하세요.');
+    const runVersion=state.runVersion;
+    state.selectedSample=null;state.counter=new PassageCounter();state.skipped=[];state.inputEnded=false;state.processedFrames=0;
+    const tracker=new LineTracker();
+    const update=()=>{
+      if(runVersion!==state.runVersion)return;
+      const complete=state.inputEnded && state.queue.pending===0;
+      renderCount(complete);
+      if(complete){
+        els.cameraMessage.textContent='영상 및 대기 중 판정 완료';
+        for(const id of ['engineSelect','acceleratorSelect','buildReferenceDB','trainSiamese','analyzeButton','autoToggle','threshold','margin','referenceMinimum','referenceMargin']) $('#'+id).disabled=false;
+      }
+    };
+    state.queue=new InspectionQueue({
+      worker:async item=>{
+        const result=await analyze({source:item.source,capture:{trackId:item.trackId,videoTime:item.videoTime},runVersion});
+        if(!result)throw new Error('판정 결과 없음');return result;
+      },
+      onResult:(item,result)=>state.counter.add(result,item.videoTime),
+      onError:(item,error)=>state.skipped.push({trackId:item.trackId,videoTime:item.videoTime,reason:error.message}),
+      onDrop:item=>state.skipped.push({trackId:item.trackId,videoTime:item.videoTime,reason:'대기열 한도 16개 초과'}),
+      onChange:update,limit:16
+    });
+    els.camera.srcObject=null;els.camera.src='/assets/videos/inspection-conveyor-random-4x.mp4';
+    els.camera.loop=false;els.camera.hidden=false;els.sampleImage.hidden=true;state.videoInput=true;
+    for(const id of ['engineSelect','acceleratorSelect','buildReferenceDB','trainSiamese','analyzeButton','autoToggle','threshold','margin','referenceMinimum','referenceMargin']) $('#'+id).disabled=true;
+    let lastTime=-1;
+    const frame=(now,metadata)=>{
+      if(runVersion!==state.runVersion||!state.videoInput||state.inputEnded)return;
+      const time=metadata?.mediaTime ?? els.camera.currentTime;
+      if(!els.camera.paused&&time!==lastTime){
+        lastTime=time;state.processedFrames++;
+        const source=sourceToCanvas(),roi=detectTarget(source);
+        const passage=tracker.observe(roi,source.width,time);
+        if(passage)state.queue.enqueue({...passage,source});
+      }
+      schedule();
+    };
+    const schedule=()=>{
+      state.frameHandle=els.camera.requestVideoFrameCallback ? els.camera.requestVideoFrameCallback(frame) : requestAnimationFrame(frame);
+    };
+    schedule();await els.camera.play();
+    $('#videoPause').disabled=false;$('#videoPause').textContent='영상 일시정지';
+    els.fpsBadge.textContent='연속 재생 · 비동기 판정';
+    els.cameraMessage.textContent='영상은 계속 재생 · 중앙 통과 이미지만 복사 · 결과는 표본 ID로 표시';
+    resetDecision();update();
   } catch (error) { els.cameraMessage.textContent = `영상 오류: ${error.message}`; }
   finally { button.disabled = false; }
 }
@@ -486,13 +574,15 @@ $('#acceleratorSelect').addEventListener('change', () => {
 });
 $('#videoStart').addEventListener('click', startVideo);
 $('#videoPause').addEventListener('click', async () => {
-  if (state.videoBusy) return;
   if (els.camera.paused) { await els.camera.play(); $('#videoPause').textContent = '영상 일시정지'; }
   else { els.camera.pause(); $('#videoPause').textContent = '영상 계속 재생'; }
 });
 els.camera.addEventListener('ended', () => {
   if (!state.videoInput) return;
-  clearInterval(state.videoTimer); renderCount(true);
+  state.inputEnded=true;
+  if(state.queue?.pending===0)for(const id of ['engineSelect','acceleratorSelect','buildReferenceDB','trainSiamese','analyzeButton','autoToggle','threshold','margin','referenceMinimum','referenceMargin']) $('#'+id).disabled=false;
+  renderCount(state.queue?.pending===0);
+  els.cameraMessage.textContent=state.queue?.pending ? "영상 종료 · 남은 판정 처리 중" : "영상 및 판정 완료";
   $('#videoPause').disabled = true;
 });
 $('#downloadCount').addEventListener('click', () => {

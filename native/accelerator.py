@@ -52,10 +52,10 @@ def image(data):
 
 def clip(data):
     import numpy as np
-    from tokenizers import Tokenizer
     backend = data['backend']
     if backend == 'hailo10h':
         return hailo_clip(data)
+    from tokenizers import Tokenizer
     model = MODEL / 'onnx/model.onnx'
     if not model.exists():
         raise RuntimeError('GPU용 FP32 model.onnx가 없습니다. 오프라인 배포 준비를 먼저 완료하세요.')
@@ -105,36 +105,97 @@ def infer_siamese(data):
     logits=-8*distances; scores=np.exp(logits-logits.max()); scores/=scores.sum()
     return {'scores':scores.tolist(),'provider':PROVIDERS[data['backend']],'model':'shared Siamese 256→32','cpuFallback':False}
 
+hailo_runtime = None
+fingerprints = {}
+
+def model_fingerprint(backend):
+    import hashlib
+    file = ROOT/'models/hailo/clip_vit_b_32_image_encoder.hef' if backend == 'hailo10h' else MODEL/'onnx/model.onnx'
+    key = (str(file),file.stat().st_mtime_ns)
+    if key not in fingerprints:
+        digest = hashlib.sha256()
+        with file.open('rb') as handle:
+            for chunk in iter(lambda:handle.read(1024*1024), b''): digest.update(chunk)
+        fingerprints[key] = digest.hexdigest()
+    return fingerprints[key]
+
+def hailo_embedding(rgb):
+    global hailo_runtime
+    import numpy as np
+    from contextlib import ExitStack
+    from hailo_platform import VDevice, FormatType
+    if hailo_runtime is None:
+        import atexit
+        stack = ExitStack()
+        try:
+            device = stack.enter_context(VDevice())
+            infer = device.create_infer_model(str(ROOT/'models/hailo/clip_vit_b_32_image_encoder.hef'))
+            infer.set_batch_size(1)
+            infer.input().set_format_type(FormatType.UINT8)
+            infer.output().set_format_type(FormatType.FLOAT32)
+            configured = stack.enter_context(infer.configure())
+            hailo_runtime = (stack, device, infer, configured)
+            atexit.register(stack.close)
+        except Exception:
+            stack.close(); raise
+    _, device, infer, configured = hailo_runtime
+    output = np.empty(infer.output().shape,dtype=np.float32)
+    binding = configured.create_bindings()
+    binding.input().set_buffer(np.ascontiguousarray(rgb))
+    binding.output().set_buffer(output)
+    configured.run([binding],10000)
+    return output.flatten()
+
+def image_embedding(data):
+    import numpy as np
+    backend = data['backend']
+    rgb = np.asarray(image(data['image']))
+    if backend == 'hailo10h':
+        return hailo_embedding(rgb), 'HailoRT / Hailo-10H'
+    path = MODEL/'onnx/image_encoder.onnx'
+    if not path.exists(): raise RuntimeError('이미지 인코더가 없습니다. scripts/export-clip-image.py를 실행하세요.')
+    runtime = session(str(path),backend,('image',backend))
+    pixels=(rgb.astype(np.float32)/255-np.array([.48145466,.4578275,.40821073],np.float32))/np.array([.26862954,.26130258,.27577711],np.float32)
+    vector = runtime.run(['image_embeds'],{'pixel_values':pixels.transpose(2,0,1)[None]})[0][0]
+    return vector, PROVIDERS[backend]
+
 def hailo_clip(data):
     import numpy as np
-    from hailo_platform import VDevice, FormatType
-    manifest_path=ROOT/'models/hailo/clip.json'
-    if not manifest_path.exists():
-        raise RuntimeError('Hailo 모델 manifest와 동일 CLIP의 설명 벡터가 없습니다. 배포 준비가 필요합니다.')
-    manifest=json.loads(manifest_path.read_text())
-    if manifest['prompts'] != [c['prompt'] for c in data['classes']]:
-        raise RuntimeError('설명 DB가 저장된 Hailo 설명 벡터와 다릅니다. 벡터를 다시 생성하세요.')
-    # The official HEF incorporates input normalization (0..255 RGB input).
-    rgb=np.asarray(image(data['image']),dtype=np.uint8)
-    with VDevice() as device:
-        infer=device.create_infer_model(str(ROOT/'models/hailo'/manifest['hef']))
-        infer.set_batch_size(1)
-        infer.input().set_format_type(FormatType.UINT8)
-        infer.output().set_format_type(FormatType.FLOAT32)
-        with infer.configure() as configured:
-            output=np.empty(infer.output().shape,dtype=np.float32)
-            binding=configured.create_bindings()
-            binding.input().set_buffer(np.ascontiguousarray(rgb))
-            binding.output().set_buffer(output)
-            configured.run([binding],10000)
-    vector=output.flatten(); vector/=max(np.linalg.norm(vector),1e-12)
+    manifest=json.loads((ROOT/'models/hailo/clip.json').read_text())
+    if manifest['prompts'] != [c['prompt'] for c in data['classes']]: raise RuntimeError('설명 DB가 저장된 벡터와 다릅니다.')
+    vector, provider = image_embedding(data)
+    vector/=max(np.linalg.norm(vector),1e-12)
     texts=np.asarray(manifest['textVectors'],np.float32)
     texts/=np.maximum(np.linalg.norm(texts,axis=1,keepdims=True),1e-12)
     logits=(texts@vector)*float(manifest['logitScale'])
     scores=np.exp(logits-logits.max()); scores/=scores.sum()
-    return {'scores':scores.tolist(),'provider':'HailoRT / Hailo-10H','model':manifest['model'],'cpuFallback':False}
+    return {'scores':scores.tolist(),'provider':provider,'model':manifest['model'],'cpuFallback':False}
+
+def reference_path(backend):
+    return Path(os.environ.get('APP_DATA_DIR',ROOT/'data'))/f'reference-embeddings-{backend}.json'
+
+def reference_db(data):
+    from reference_db import build, save, match
+    backend=data['backend']; action=data['action']; path=reference_path(backend)
+    if action == 'prepare_references':
+        rows=[]
+        for row in data['references']:
+            vector,provider=image_embedding({'backend':backend,'image':row['image']})
+            rows.append({**row,'embedding':vector})
+        db=build(rows,model_fingerprint(backend),{'provider':provider,'backend':backend,'source':'8 reference SVG images; not video answer sequence'})
+        save(db,path)
+        return {'count':len(rows),'provider':provider,'model':db['model'],'cpuFallback':False}
+    if not path.exists() and backend != 'hailo10h':
+        path=ROOT/'models/references/clip-fp32.json'
+    if not path.exists(): raise RuntimeError('선택 장치의 기준 벡터 DB가 없습니다. 기준 DB 만들기를 실행하세요.')
+    db=json.loads(path.read_text(encoding='utf-8'))
+    if action == 'export_references': return db
+    vector,provider=image_embedding(data)
+    scores=match(db,vector,model_fingerprint(backend),[c['id'] for c in data['classes']])
+    return {'scores':scores,'provider':provider,'model':db['model'],'cpuFallback':False,'metric':'cosine','referenceCreatedAt':db['createdAt']}
 
 def dispatch(data):
+    if data['action'] in ['prepare_references','match_references','export_references']: return reference_db(data)
     return {'status':status,'clip':lambda:clip(data),'prepare_siamese':lambda:prepare_siamese(data),'siamese':lambda:infer_siamese(data)}[data['action']]()
 
 if __name__=='__main__':

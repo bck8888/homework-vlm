@@ -20,3 +20,7 @@ for item in json.loads((root/'models/downloads.json').read_text()):
   if hashlib.sha256(partial.read_bytes()).hexdigest()!=item['sha256']: raise SystemExit('Checksum mismatch')
   partial.replace(target)
  print('Verified',item['target'],flush=True)
+
+if args.target != 'hailo10h' and not args.verify_only:
+ import subprocess,sys
+ subprocess.run([sys.executable,str(root/'scripts/export-clip-image.py')],check=True)

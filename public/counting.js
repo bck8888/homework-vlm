@@ -9,7 +9,7 @@ export class PassageCounter {
     return true;
   }
   add(result, videoTime) {
-    this.records.push({ videoTime, status: result.status, id: result.best.item.id, label: result.best.item.labelKo, score: result.best.score, inference: result.inference });
+    this.records.push({ trackId:result.capture?.trackId, videoTime, status: result.status, id: result.best.item.id, label: result.best.item.labelKo, score: result.best.score, inference: result.inference });
   }
   report(classes, complete = false) {
     const counts = classes.map(c => ({ id: c.id, label: c.labelKo, expected: 4, actual: this.records.filter(r => r.id === c.id && r.status !== 'review').length }));

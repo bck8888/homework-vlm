@@ -20,3 +20,8 @@ models/**/*.hef
 wheelhouse/
 public/assets/videos/inspection-sequence.mp4
 public/assets/videos/inspection-conveyor.mp4
+
+diagnostics/frames/
+diagnostics/references/
+
+diagnostics/

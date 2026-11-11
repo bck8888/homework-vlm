@@ -1,5 +1,7 @@
 # GPU/NPU 장비 검증 브랜치
 
+추가: 기준 이미지 8개의 CLIP 벡터 JSON DB 매칭, 글자 제외 표본 검출, 영상 연속 재생과 비동기 추론 대기열, 표본 ID별 결과·누락 기록. 기본 기준 DB는 포함되어 있고 이미지 전용 모델은 설치 시 추출합니다.
+
 현재 변경의 설치·실행 방법은 [ACCELERATOR-SETUP.md](docs/ACCELERATOR-SETUP.md)를 먼저 보세요. AMD DirectML / NVIDIA CUDA / Hailo-10H 어댑터를 추가했으며 실기 검증은 아직 완료되지 않았습니다. Hailo용 Siamese는 미완료입니다. 아래 기존 안내의 브라우저 CPU 실행 및 과거 패키지는 이전 버전 설명입니다.
 
 # CLIP 양불량 판정 로컬 시연

@@ -1,3 +1,7 @@
+# GPU/NPU 장비 검증 브랜치
+
+현재 변경의 설치·실행 방법은 [ACCELERATOR-SETUP.md](docs/ACCELERATOR-SETUP.md)를 먼저 보세요. AMD DirectML / NVIDIA CUDA / Hailo-10H 어댑터를 추가했으며 실기 검증은 아직 완료되지 않았습니다. Hailo용 Siamese는 미완료입니다. 아래 기존 안내의 브라우저 CPU 실행 및 과거 패키지는 이전 버전 설명입니다.
+
 # CLIP 양불량 판정 로컬 시연
 
 ## Siamese 시연

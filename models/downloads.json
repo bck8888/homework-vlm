@@ -1,0 +1,91 @@
+[
+  {
+    "target": "public/models/Xenova/clip-vit-base-patch32/config.json",
+    "url": "https://huggingface.co/Xenova/clip-vit-base-patch32/resolve/6b7c523703ae26e39be4b03774966f8571c7f523/config.json",
+    "sha256": "493ef57ff783e42d1530c91b53469b7fdf8db8a9c1408e86998fcb7899a4f495",
+    "targets": [
+      "cuda",
+      "directml"
+    ]
+  },
+  {
+    "target": "public/models/Xenova/clip-vit-base-patch32/preprocessor_config.json",
+    "url": "https://huggingface.co/Xenova/clip-vit-base-patch32/resolve/6b7c523703ae26e39be4b03774966f8571c7f523/preprocessor_config.json",
+    "sha256": "6f638fb9401a6d6296feff533ee7efe657b787c49f954f82f5906b36ef2a1b1f",
+    "targets": [
+      "cuda",
+      "directml"
+    ]
+  },
+  {
+    "target": "public/models/Xenova/clip-vit-base-patch32/tokenizer.json",
+    "url": "https://huggingface.co/Xenova/clip-vit-base-patch32/resolve/6b7c523703ae26e39be4b03774966f8571c7f523/tokenizer.json",
+    "sha256": "f7f3b7af117d467b58374797691a6438d3e6b9e9cef800dfd5dced7f697a90cd",
+    "targets": [
+      "cuda",
+      "directml"
+    ]
+  },
+  {
+    "target": "public/models/Xenova/clip-vit-base-patch32/tokenizer_config.json",
+    "url": "https://huggingface.co/Xenova/clip-vit-base-patch32/resolve/6b7c523703ae26e39be4b03774966f8571c7f523/tokenizer_config.json",
+    "sha256": "60ba2912bc6344c94bc16bbdec27fa1209409167b6f2fdf3cfe9e65462ea3967",
+    "targets": [
+      "cuda",
+      "directml"
+    ]
+  },
+  {
+    "target": "public/models/Xenova/clip-vit-base-patch32/special_tokens_map.json",
+    "url": "https://huggingface.co/Xenova/clip-vit-base-patch32/resolve/6b7c523703ae26e39be4b03774966f8571c7f523/special_tokens_map.json",
+    "sha256": "c4864a9376a8401918425bed71fc14fc0e81f9b59ec45c1cf96cccb2df508eac",
+    "targets": [
+      "cuda",
+      "directml"
+    ]
+  },
+  {
+    "target": "public/models/Xenova/clip-vit-base-patch32/vocab.json",
+    "url": "https://huggingface.co/Xenova/clip-vit-base-patch32/resolve/6b7c523703ae26e39be4b03774966f8571c7f523/vocab.json",
+    "sha256": "5047b556ce86ccaf6aa22b3ffccfc52d391ea4accdab9c2f2407da5b742d4363",
+    "targets": [
+      "cuda",
+      "directml"
+    ]
+  },
+  {
+    "target": "public/models/Xenova/clip-vit-base-patch32/merges.txt",
+    "url": "https://huggingface.co/Xenova/clip-vit-base-patch32/resolve/6b7c523703ae26e39be4b03774966f8571c7f523/merges.txt",
+    "sha256": "9fd691f7c8039210e0fced15865466c65820d09b63988b0174bfe25de299051a",
+    "targets": [
+      "cuda",
+      "directml"
+    ]
+  },
+  {
+    "target": "public/models/Xenova/clip-vit-base-patch32/README.md",
+    "url": "https://huggingface.co/Xenova/clip-vit-base-patch32/resolve/6b7c523703ae26e39be4b03774966f8571c7f523/README.md",
+    "sha256": "ae287015b60eb7ca1d40e726c550af1988977c24f0005f123274d52490c20d8d",
+    "targets": [
+      "cuda",
+      "directml"
+    ]
+  },
+  {
+    "target": "public/models/Xenova/clip-vit-base-patch32/onnx/model.onnx",
+    "url": "https://huggingface.co/Xenova/clip-vit-base-patch32/resolve/6b7c523703ae26e39be4b03774966f8571c7f523/onnx/model.onnx",
+    "sha256": "8ac34fc990f890b4bec8d197de81f956fb135a65067e77fadbf8f053656ed711",
+    "targets": [
+      "cuda",
+      "directml"
+    ]
+  },
+  {
+    "target": "models/hailo/clip_vit_b_32_image_encoder.hef",
+    "url": "https://hailo-model-zoo.s3.eu-west-2.amazonaws.com/ModelZoo/Compiled/v5.5.0/hailo10h/clip_vit_b_32_image_encoder.hef",
+    "sha256": "440bca63288af13115adfebbc8540a712d236ab51b63c52ed7c71e8cb1a949b0",
+    "targets": [
+      "hailo10h"
+    ]
+  }
+]

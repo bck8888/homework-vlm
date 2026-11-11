@@ -1,17 +1,20 @@
 # Shared repository
 
-Canonical repository: https://github.com/bck8888/homework-vlm
+Canonical: https://github.com/bck8888/homework-vlm
+Active branch: feat/siamese-demo
 
-This initial implementation is the browser CLIP demo from chat 01a1c041-c147-7ea2-804e-9d2da5f19886.
+## Current device-validation change
 
-## Verified scope
-
-- Browser CLIP ViT-B/32 ONNX/WASM inference, JSON prompts, SVG targets, UI and JSONL storage.
-- Rehearsal mode uses generated scores and is not model inference.
-- Hailo device detection only; NPU inference is not implemented.
-- Siamese educational shared encoder and contrastive pair training are implemented in public/siamese.js. Camera generalization and Hailo acceleration remain unverified.
-- Raspberry Pi installation and physical camera accuracy have not been verified on hardware.
+- AMD Ryzen 7 6800H / Windows 11: DirectML GPU adapter.
+- NVIDIA RTX 3060 / Windows: CUDA GPU adapter.
+- Raspberry Pi 5 / 64-bit Pi OS / 16GB RAM / Hailo-10H: HailoRT CLIP HEF adapter.
+- Runtime inference CPU fallback is prohibited. CPU image preprocessing and postprocessing remain.
+- Siamese training currently runs on browser CPU, inference uses selected GPU. Hailo Siamese HEF compilation is NOT implemented.
+- Official CLIP GPU model and Hailo HEF are excluded from Git. Download pinned files with scripts/download-models.py; SHA256 is checked.
+- All target-device inference, throughput, camera accuracy and the full 32-object counting run remain unverified.
+- Unit tests verify counting state and accelerator-selection/fallback guards. These do not certify GPU/NPU hardware operation.
+- Setup: docs/ACCELERATOR-SETUP.md. Earlier CPU release archives are obsolete for this requirement.
 
 ## Coordination
 
-Fetch the current remote state before working. Use a separate feature branch for each chat and review changes before merging. Keep private camera captures, history, dependencies and generated release archives out of Git. Compare the second implementation before replacing this one.
+Fetch current remote before changes. Preserve other work; use separate feature branches. Do not commit camera captures, inspection history, dependency directories or generated release archives. Device validation must record runtime versions, actual provider, errors, and per-class counts.

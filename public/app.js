@@ -1,4 +1,4 @@
-import { env, pipeline } from "@huggingface/transformers";
+import { PassageCounter } from './counting.js';
 import { pixels, trainSiamese } from './siamese.js';
 let siamese = null;
 let siameseTraining = false;
@@ -20,26 +20,20 @@ async function trainSharedEncoder() {
     siamese = await trainSiamese(state.db.classes, prepareSiamese, (epoch, loss) => {
       progress.textContent = `실제 쌍 학습 ${epoch}/80 · contrastive loss ${loss.toFixed(4)}`;
     });
+    await nativeRequest('prepare_siamese', {
+      weights:Array.from(siamese.model.w),bias:Array.from(siamese.model.b),references:siamese.references.map(r=>Array.from(r.vector))
+    });
     const { before, after } = siamese;
     progress.textContent = `학습 완료 · 양성 거리 ${before.positive.toFixed(3)} → ${after.positive.toFixed(3)} / 음성 거리 ${before.negative.toFixed(3)} → ${after.negative.toFixed(3)}. 합성 변형 내부 점검이며 실제 카메라 정확도는 별도 검증이 필요합니다.`;
-  } catch (error) { progress.textContent = `학습 실패: ${error.message}`; }
+  } catch (error) { siamese = null; progress.textContent = `학습 실패: ${error.message}`; }
   finally { button.disabled = false; siameseTraining = false; }
 }
 
-function siameseScores() {
-  if (!siamese || siameseTraining) throw new Error('Siamese 쌍 학습을 먼저 완료하세요.');
-  const query = siamese.model.encode(pixels(els.roiPreview));
-  const rows = siamese.references.map(({item, vector}) => {
-    const distance = siamese.model.distance(query, vector);
-    return { item, distance, score: Math.exp(-8 * distance) };
-  });
-  const total = rows.reduce((sum, r) => sum + r.score, 0);
-  return rows.map(r => ({...r, score:r.score/total})).sort((a,b) => b.score-a.score);
+async function siameseScores() {
+  if (!siamese || siameseTraining) throw new Error('Siamese 모델 준비를 먼저 완료하세요.');
+  const output = await nativeRequest('siamese',{pixels:Array.from(pixels(els.roiPreview))});
+  return siamese.references.map(({item},index)=>({item,score:output.scores[index]})).sort((a,b)=>b.score-a.score);
 }
-
-env.allowLocalModels = false;
-env.allowRemoteModels = true;
-env.backends.onnx.wasm.numThreads = Math.max(1, Math.min(4, navigator.hardwareConcurrency || 1));
 
 const $ = (selector) => document.querySelector(selector);
 const els = {
@@ -57,6 +51,10 @@ const els = {
 const state = {
   db: null,
   stream: null,
+  videoInput: false,
+  counter: null,
+  videoTimer: null,
+  videoBusy: false,
   classifier: null,
   modelLoading: false,
   analyzing: false,
@@ -130,6 +128,7 @@ async function selectSample(item, card) {
 
 async function startCamera() {
   if (state.stream) { stopCamera(); return; }
+  stopCamera();
   try {
     state.stream = await navigator.mediaDevices.getUserMedia({
       video: { width: { ideal: 1280 }, height: { ideal: 720 }, facingMode: { ideal: "environment" } },
@@ -151,6 +150,12 @@ async function startCamera() {
 }
 
 function stopCamera() {
+  clearInterval(state.videoTimer);
+  state.videoTimer = null;
+  state.videoInput = false;
+  els.camera.pause();
+  els.camera.removeAttribute("src");
+  $("#videoPause").disabled = true;
   state.stream?.getTracks().forEach((track) => track.stop());
   state.stream = null;
   els.camera.srcObject = null;
@@ -173,45 +178,41 @@ function updateSettingOutputs() {
   els.marginOutput.value = Number(els.margin.value).toFixed(2);
 }
 
+async function nativeRequest(action, extra = {}) {
+  const response = await fetch('/api/accelerator', {method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({action,backend:$('#acceleratorSelect').value,...extra})});
+  const data = await response.json();
+  if (!response.ok) throw new Error(data.error || '가속기 실행 실패');
+  state.lastInference = {provider:data.provider,model:data.model,backend:$('#acceleratorSelect').value,cpuFallback:data.cpuFallback};
+  $('#acceleratorStatus').textContent = `${data.provider} · ${data.model} · CPU 대체 없음`;
+  return data;
+}
+
 async function loadModel() {
-  if (state.classifier || state.modelLoading) return;
-  state.modelLoading = true;
-  status(els.modelStatus, "CLIP 로딩 중", "warn");
-  els.loadModelButton.disabled = true;
-  els.loadModelButton.textContent = "모델 내려받는 중…";
-  try {
-    state.classifier = await pipeline("zero-shot-image-classification", "Xenova/clip-vit-base-patch32", {
-      dtype: "q8",
-      progress_callback: (progress) => {
-        if (progress.status === "progress") {
-          const pct = Math.round(progress.progress || 0);
-          els.loadModelButton.textContent = `모델 로딩 ${pct}%`;
-        }
-      },
-    });
-    status(els.modelStatus, "CLIP 준비됨", "ok");
-    els.loadModelButton.textContent = "CLIP 모델 준비 완료";
-  } catch (error) {
-    status(els.modelStatus, "CLIP 로드 실패", "bad");
-    els.loadModelButton.disabled = false;
-    els.loadModelButton.textContent = "CLIP 모델 다시 로드";
-    throw error;
-  } finally {
-    state.modelLoading = false;
+  const response = await fetch('/api/accelerator/status');
+  const data = await response.json();
+  if (!response.ok) throw new Error(data.error || '가속기 확인 실패');
+  const backend = $('#acceleratorSelect').value;
+  const names = {cuda:'CUDAExecutionProvider',directml:'DmlExecutionProvider'};
+  if (backend === 'hailo10h' ? !data.hailoRuntimeInstalled : !data.providers.includes(names[backend])) {
+    status(els.modelStatus,'가속기 준비 안 됨','bad');
+    throw new Error('선택한 GPU/NPU 실행 환경이 없습니다. CPU로 대체하지 않습니다.');
   }
+  status(els.modelStatus,'런타임 확인 · 추론 미검증','warn');
+  $('#acceleratorStatus').textContent = '런타임 설치 확인됨. 실제 판정 성공 후 사용 장치를 표시합니다.';
 }
 
 function sourceToCanvas() {
-  const source = state.stream ? els.camera : els.sampleImage.hidden ? null : els.sampleImage;
+  const moving = state.stream || state.videoInput;
+  const source = moving ? els.camera : els.sampleImage.hidden ? null : els.sampleImage;
   if (!source) throw new Error("카메라 또는 표본 이미지를 준비하세요.");
-  const width = state.stream ? source.videoWidth : 512;
-  const height = state.stream ? source.videoHeight : 512;
+  const width = moving ? source.videoWidth : 512;
+  const height = moving ? source.videoHeight : 512;
   if (!width || !height) throw new Error("영상이 아직 준비되지 않았습니다.");
   const canvas = document.createElement("canvas");
   canvas.width = width;
   canvas.height = height;
   const ctx = canvas.getContext("2d", { willReadFrequently: true });
-  if (state.stream) {
+  if (moving) {
     ctx.drawImage(source, 0, 0, width, height);
   } else {
     ctx.fillStyle = "white";
@@ -252,7 +253,7 @@ function detectTarget(source) {
   const centerY = scanY + minY + bboxH / 2;
   const x = Math.max(0, Math.min(w - cropSide, centerX - cropSide / 2));
   const y = Math.max(0, Math.min(h - cropSide, centerY - cropSide / 2));
-  return { x, y, size: cropSide, diameterPx: Math.round(Math.max(bboxW, bboxH)), contrast: Math.round(contrast), detected };
+  return { x, y, centerX, size: cropSide, diameterPx: Math.round(Math.max(bboxW, bboxH)), contrast: Math.round(contrast), detected };
 }
 
 function drawRoi(source, roi) {
@@ -284,12 +285,8 @@ function rehearsalScores(expectedId) {
 }
 
 async function clipScores() {
-  if (!state.classifier) await loadModel();
-  const prompts = state.db.classes.map((item) => item.prompt);
-  const imageUrl = els.roiPreview.toDataURL("image/jpeg", .92);
-  const output = await state.classifier(imageUrl, prompts);
-  const byPrompt = new Map(output.map((row) => [row.label, row.score]));
-  return state.db.classes.map((item) => ({ item, score: byPrompt.get(item.prompt) || 0 })).sort((a, b) => b.score - a.score);
+  const output = await nativeRequest('clip',{image:els.roiPreview.toDataURL('image/png'),classes:state.db.classes});
+  return state.db.classes.map((item,index)=>({item,score:output.scores[index]})).sort((a,b)=>b.score-a.score);
 }
 
 function decide(scores) {
@@ -337,6 +334,7 @@ async function saveDefect(result, roi, mode) {
     threshold: Number(els.threshold.value),
     margin: Number(els.margin.value),
     engine: mode,
+    inference: state.lastInference,
     roi: { diameterPx: roi.diameterPx, contrast: roi.contrast },
     thumbnail: els.roiPreview.toDataURL("image/jpeg", .56),
   };
@@ -359,10 +357,10 @@ async function analyze({ auto = false } = {}) {
     const started = performance.now();
     const mode = els.engineSelect.value;
     if (mode === "rehearsal" && !state.selectedSample) throw new Error("리허설 모드는 아래 표본을 먼저 선택하세요.");
-    const scores = mode === "rehearsal" ? rehearsalScores(state.selectedSample?.id).sort((a, b) => b.score - a.score) : mode === 'siamese' ? siameseScores() : await clipScores();
+    const scores = mode === "rehearsal" ? rehearsalScores(state.selectedSample?.id).sort((a, b) => b.score - a.score) : mode === 'siamese' ? await siameseScores() : await clipScores();
     setStep(3);
     renderScores(scores);
-    const result = decide(scores);
+    const result = {...decide(scores), inference:state.lastInference};
     const key = `${result.status}:${result.best.item.id}`;
     if (auto) {
       state.stableCount = key === state.lastAutoKey ? state.stableCount + 1 : 1;
@@ -376,6 +374,7 @@ async function analyze({ auto = false } = {}) {
       setStep(4);
       if (result.status === "defect") await saveDefect(result, roi, mode);
     }
+    return result;
   } catch (error) {
     els.signalLamp.className = "signal-lamp review";
     els.verdictLabel.textContent = "실행 오류";
@@ -421,9 +420,11 @@ async function checkRuntime() {
 els.cameraButton.addEventListener("click", startCamera);
 els.analyzeButton.addEventListener("click", () => analyze());
 els.autoToggle.addEventListener("change", updateAuto);
-els.loadModelButton.addEventListener("click", () => loadModel().catch(() => {}));
+els.loadModelButton.addEventListener("click", () => loadModel().catch(error => { $("#acceleratorStatus").textContent = error.message; }));
 document.querySelector('#trainSiamese').addEventListener('click', trainSharedEncoder);
 els.engineSelect.addEventListener("change", () => {
+  stopCamera();
+  els.autoToggle.checked = false; updateAuto();
   const mode = els.engineSelect.value;
   els.engineBadge.textContent = mode === 'clip' ? 'CLIP' : mode === 'siamese' ? 'SIAMESE' : 'REHEARSAL';
   document.querySelector('.vector-flow').textContent = mode === 'siamese' ? 'ROI · 공유 인코더 f · 기준 이미지 벡터 · 거리 기반 상대 점수' : 'ROI · CLIP · 설명 벡터 · 상대 점수';
@@ -433,5 +434,72 @@ els.threshold.addEventListener("input", updateSettingOutputs);
 els.margin.addEventListener("input", updateSettingOutputs);
 els.downloadHistory.addEventListener("click", downloadHistory);
 window.addEventListener("beforeunload", stopCamera);
+
+function renderCount(complete = false) {
+  if (!state.counter) return;
+  const report = state.counter.report(state.db.classes, complete);
+  localStorage.setItem('inspection-last-run', JSON.stringify(report));
+  $('#countSummary').textContent = `${complete ? '완료' : '진행 중'} · 통과 ${report.actualTotal}/32 · 확인 필요 ${report.review} · ${complete ? (report.countMatch ? '개수 일치 (정확도 검증과 별개)' : '개수 불일치 — 결과 확인 필요') : '각 종류 정답 4개'}`;
+  $('#countRows').textContent = report.counts.map(c => `${c.label}: ${c.actual}/4`).join('  ·  ');
+}
+
+async function startVideo() {
+  const button = $('#videoStart'); button.disabled = true;
+  try {
+    stopCamera(); els.autoToggle.checked = false; updateAuto();
+    if (els.engineSelect.value === 'rehearsal') throw new Error('영상 검사는 CLIP 또는 Siamese를 선택하세요.');
+    if (els.engineSelect.value === 'siamese' && !siamese) await trainSharedEncoder();
+    if (els.engineSelect.value === 'siamese' && !siamese) throw new Error('Siamese 학습을 완료하지 못했습니다.');
+    if (els.engineSelect.value === 'clip') await loadModel();
+    state.selectedSample = null; state.counter = new PassageCounter();
+    els.camera.srcObject = null;
+    els.camera.src = '/assets/videos/inspection-conveyor-random-4x.mp4';
+    els.camera.loop = false; els.camera.hidden = false; els.sampleImage.hidden = true;
+    state.videoInput = true;
+    await els.camera.play();
+    $('#videoPause').disabled = false; $('#videoPause').textContent = '영상 일시정지';
+    els.fpsBadge.textContent = '로컬 영상 · 32개';
+    els.cameraMessage.textContent = '중앙 통과 시 1회 판정 · 판정 중 영상 잠시 정지';
+    resetDecision(); renderCount();
+    state.videoTimer = setInterval(async () => {
+      if (state.videoBusy || state.analyzing || els.camera.paused || !state.videoInput) return;
+      const source = sourceToCanvas(); const roi = detectTarget(source);
+      if (!state.counter.observe(roi, source.width)) return;
+      state.videoBusy = true; els.camera.pause();
+      const time = els.camera.currentTime;
+      try {
+        const result = await analyze();
+        if (!result) throw new Error(els.verdictDetail.textContent);
+        state.counter.add(result, time); renderCount();
+        if (state.videoInput) await els.camera.play();
+      } catch (error) {
+        els.cameraMessage.textContent = `영상 검사 중지: ${error.message}`;
+        clearInterval(state.videoTimer);
+      } finally { state.videoBusy = false; }
+    }, 80);
+  } catch (error) { els.cameraMessage.textContent = `영상 오류: ${error.message}`; }
+  finally { button.disabled = false; }
+}
+$('#acceleratorSelect').addEventListener('change', () => {
+  stopCamera(); siamese = null; els.autoToggle.checked = false; updateAuto(); resetDecision();
+  $('#acceleratorStatus').textContent = '선택한 가속기에서 아직 추론하지 않았습니다.';
+});
+$('#videoStart').addEventListener('click', startVideo);
+$('#videoPause').addEventListener('click', async () => {
+  if (state.videoBusy) return;
+  if (els.camera.paused) { await els.camera.play(); $('#videoPause').textContent = '영상 일시정지'; }
+  else { els.camera.pause(); $('#videoPause').textContent = '영상 계속 재생'; }
+});
+els.camera.addEventListener('ended', () => {
+  if (!state.videoInput) return;
+  clearInterval(state.videoTimer); renderCount(true);
+  $('#videoPause').disabled = true;
+});
+$('#downloadCount').addEventListener('click', () => {
+  const text = localStorage.getItem('inspection-last-run');
+  if (!text) return;
+  const url = URL.createObjectURL(new Blob([text], {type:'application/json'}));
+  const a = document.createElement('a'); a.href = url; a.download = 'inspection-counts.json'; a.click(); URL.revokeObjectURL(url);
+});
 
 await Promise.all([loadDatabase(), loadHistory(), checkRuntime()]);

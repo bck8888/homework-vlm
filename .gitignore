@@ -7,3 +7,16 @@ data/*
 .env
 .env.*
 *.log
+
+public/models/
+public/wasm/
+
+.build-venv/
+.venv/
+__pycache__/
+*.pyc
+models/**/*.hef
+*.part
+wheelhouse/
+public/assets/videos/inspection-sequence.mp4
+public/assets/videos/inspection-conveyor.mp4

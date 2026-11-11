@@ -11,5 +11,5 @@ if (!fs.existsSync(path.join(root, "dist/index.html"))) {
 }
 fs.mkdirSync(output, { recursive: true });
 if (fs.existsSync(zipPath)) fs.unlinkSync(zipPath);
-execFileSync("/usr/bin/zip", ["-r", zipPath, "dist", "public", "data", "docs", "scripts", "server.mjs", "package.json", "package-lock.json", "README.md", "-x", "data/inspection-history.jsonl"], { cwd: root, stdio: "inherit" });
+execFileSync("/usr/bin/zip", ["-r", zipPath, "dist", "public", "data", "docs", "scripts", "native", "models", "server.mjs", "package.json", "package-lock.json", "README.md", "-x", "data/inspection-history.jsonl"], { cwd: root, stdio: "inherit" });
 console.log(zipPath);

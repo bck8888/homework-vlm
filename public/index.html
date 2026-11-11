@@ -82,6 +82,7 @@
             <label>실행 엔진
               <select id="engineSelect">
                 <option value="clip">실제 CLIP · ONNX/WASM</option>
+                <option value="siamese">Siamese · 기준 이미지 쌍 비교</option>
                 <option value="rehearsal">리허설 · 결정론적 점수</option>
               </select>
             </label>
@@ -93,6 +94,8 @@
             </label>
           </div>
           <button id="loadModelButton" class="wide">CLIP 모델 로드</button>
+          <button id="trainSiamese" class="wide" style="margin-top:10px">Siamese 쌍 학습 시작</button>
+          <p id="siameseProgress" class="engine-note">공유 인코더 256→32 · contrastive loss · 정상/불량 이미지 쌍. 학습 후 기준 이미지와 거리 비교.</p>
           <p class="engine-note">기본 모델은 CLIP ViT-B/32 양자화 ONNX입니다. 최초 실행 시 모델을 내려받아 브라우저 캐시에 저장합니다.</p>
         </aside>
       </section>

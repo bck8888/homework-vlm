@@ -1,4 +1,41 @@
 import { env, pipeline } from "@huggingface/transformers";
+import { pixels, trainSiamese } from './siamese.js';
+let siamese = null;
+let siameseTraining = false;
+
+function prepareSiamese(canvas) {
+  const roi = detectTarget(canvas);
+  const crop = document.createElement('canvas'); crop.width = crop.height = 224;
+  crop.getContext('2d').drawImage(canvas, roi.x, roi.y, roi.size, roi.size, 0, 0, 224, 224);
+  return crop;
+}
+
+async function trainSharedEncoder() {
+  if (siameseTraining) return;
+  siameseTraining = true;
+  const button = document.querySelector('#trainSiamese');
+  const progress = document.querySelector('#siameseProgress');
+  button.disabled = true;
+  try {
+    siamese = await trainSiamese(state.db.classes, prepareSiamese, (epoch, loss) => {
+      progress.textContent = `실제 쌍 학습 ${epoch}/80 · contrastive loss ${loss.toFixed(4)}`;
+    });
+    const { before, after } = siamese;
+    progress.textContent = `학습 완료 · 양성 거리 ${before.positive.toFixed(3)} → ${after.positive.toFixed(3)} / 음성 거리 ${before.negative.toFixed(3)} → ${after.negative.toFixed(3)}. 합성 변형 내부 점검이며 실제 카메라 정확도는 별도 검증이 필요합니다.`;
+  } catch (error) { progress.textContent = `학습 실패: ${error.message}`; }
+  finally { button.disabled = false; siameseTraining = false; }
+}
+
+function siameseScores() {
+  if (!siamese || siameseTraining) throw new Error('Siamese 쌍 학습을 먼저 완료하세요.');
+  const query = siamese.model.encode(pixels(els.roiPreview));
+  const rows = siamese.references.map(({item, vector}) => {
+    const distance = siamese.model.distance(query, vector);
+    return { item, distance, score: Math.exp(-8 * distance) };
+  });
+  const total = rows.reduce((sum, r) => sum + r.score, 0);
+  return rows.map(r => ({...r, score:r.score/total})).sort((a,b) => b.score-a.score);
+}
 
 env.allowLocalModels = false;
 env.allowRemoteModels = true;
@@ -322,7 +359,7 @@ async function analyze({ auto = false } = {}) {
     const started = performance.now();
     const mode = els.engineSelect.value;
     if (mode === "rehearsal" && !state.selectedSample) throw new Error("리허설 모드는 아래 표본을 먼저 선택하세요.");
-    const scores = mode === "rehearsal" ? rehearsalScores(state.selectedSample?.id).sort((a, b) => b.score - a.score) : await clipScores();
+    const scores = mode === "rehearsal" ? rehearsalScores(state.selectedSample?.id).sort((a, b) => b.score - a.score) : mode === 'siamese' ? siameseScores() : await clipScores();
     setStep(3);
     renderScores(scores);
     const result = decide(scores);
@@ -385,7 +422,13 @@ els.cameraButton.addEventListener("click", startCamera);
 els.analyzeButton.addEventListener("click", () => analyze());
 els.autoToggle.addEventListener("change", updateAuto);
 els.loadModelButton.addEventListener("click", () => loadModel().catch(() => {}));
-els.engineSelect.addEventListener("change", () => { els.engineBadge.textContent = els.engineSelect.value === "clip" ? "CLIP" : "REHEARSAL"; resetDecision(); });
+document.querySelector('#trainSiamese').addEventListener('click', trainSharedEncoder);
+els.engineSelect.addEventListener("change", () => {
+  const mode = els.engineSelect.value;
+  els.engineBadge.textContent = mode === 'clip' ? 'CLIP' : mode === 'siamese' ? 'SIAMESE' : 'REHEARSAL';
+  document.querySelector('.vector-flow').textContent = mode === 'siamese' ? 'ROI · 공유 인코더 f · 기준 이미지 벡터 · 거리 기반 상대 점수' : 'ROI · CLIP · 설명 벡터 · 상대 점수';
+  resetDecision();
+});
 els.threshold.addEventListener("input", updateSettingOutputs);
 els.margin.addEventListener("input", updateSettingOutputs);
 els.downloadHistory.addEventListener("click", downloadHistory);

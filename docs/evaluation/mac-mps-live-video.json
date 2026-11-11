@@ -1,0 +1,518 @@
+{
+  "complete": true,
+  "expectedTotal": 32,
+  "actualTotal": 32,
+  "review": 0,
+  "counts": [
+    {
+      "id": "normal-clean-a",
+      "label": "정상 A",
+      "expected": 4,
+      "actual": 4
+    },
+    {
+      "id": "normal-clean-b",
+      "label": "정상 B",
+      "expected": 4,
+      "actual": 4
+    },
+    {
+      "id": "defect-radial-crack",
+      "label": "방사형 균열",
+      "expected": 4,
+      "actual": 4
+    },
+    {
+      "id": "defect-edge-chip",
+      "label": "가장자리 깨짐",
+      "expected": 4,
+      "actual": 4
+    },
+    {
+      "id": "defect-scratch",
+      "label": "표면 긁힘",
+      "expected": 4,
+      "actual": 4
+    },
+    {
+      "id": "defect-contamination",
+      "label": "이물 오염",
+      "expected": 4,
+      "actual": 4
+    },
+    {
+      "id": "defect-deformation",
+      "label": "형상 변형",
+      "expected": 4,
+      "actual": 4
+    },
+    {
+      "id": "defect-pinhole",
+      "label": "핀홀",
+      "expected": 4,
+      "actual": 4
+    }
+  ],
+  "countMatch": true,
+  "records": [
+    {
+      "trackId": 1,
+      "videoTime": 0,
+      "status": "defect",
+      "id": "defect-scratch",
+      "label": "표면 긁힘",
+      "score": 0.9484063386917114,
+      "inference": {
+        "provider": "Apple GPU / PyTorch MPS",
+        "model": "CLIP ViT-B/32 image encoder",
+        "backend": "mps",
+        "cpuFallback": false
+      }
+    },
+    {
+      "trackId": 2,
+      "videoTime": 4,
+      "status": "normal",
+      "id": "normal-clean-b",
+      "label": "정상 B",
+      "score": 0.9975098371505737,
+      "inference": {
+        "provider": "Apple GPU / PyTorch MPS",
+        "model": "CLIP ViT-B/32 image encoder",
+        "backend": "mps",
+        "cpuFallback": false
+      }
+    },
+    {
+      "trackId": 3,
+      "videoTime": 8,
+      "status": "defect",
+      "id": "defect-deformation",
+      "label": "형상 변형",
+      "score": 0.9966199398040771,
+      "inference": {
+        "provider": "Apple GPU / PyTorch MPS",
+        "model": "CLIP ViT-B/32 image encoder",
+        "backend": "mps",
+        "cpuFallback": false
+      }
+    },
+    {
+      "trackId": 4,
+      "videoTime": 12,
+      "status": "normal",
+      "id": "normal-clean-a",
+      "label": "정상 A",
+      "score": 0.9966506361961365,
+      "inference": {
+        "provider": "Apple GPU / PyTorch MPS",
+        "model": "CLIP ViT-B/32 image encoder",
+        "backend": "mps",
+        "cpuFallback": false
+      }
+    },
+    {
+      "trackId": 5,
+      "videoTime": 16,
+      "status": "defect",
+      "id": "defect-edge-chip",
+      "label": "가장자리 깨짐",
+      "score": 0.995903491973877,
+      "inference": {
+        "provider": "Apple GPU / PyTorch MPS",
+        "model": "CLIP ViT-B/32 image encoder",
+        "backend": "mps",
+        "cpuFallback": false
+      }
+    },
+    {
+      "trackId": 6,
+      "videoTime": 20,
+      "status": "defect",
+      "id": "defect-pinhole",
+      "label": "핀홀",
+      "score": 0.99713134765625,
+      "inference": {
+        "provider": "Apple GPU / PyTorch MPS",
+        "model": "CLIP ViT-B/32 image encoder",
+        "backend": "mps",
+        "cpuFallback": false
+      }
+    },
+    {
+      "trackId": 7,
+      "videoTime": 24,
+      "status": "defect",
+      "id": "defect-radial-crack",
+      "label": "방사형 균열",
+      "score": 0.9962272644042969,
+      "inference": {
+        "provider": "Apple GPU / PyTorch MPS",
+        "model": "CLIP ViT-B/32 image encoder",
+        "backend": "mps",
+        "cpuFallback": false
+      }
+    },
+    {
+      "trackId": 8,
+      "videoTime": 28,
+      "status": "defect",
+      "id": "defect-contamination",
+      "label": "이물 오염",
+      "score": 0.9970672130584717,
+      "inference": {
+        "provider": "Apple GPU / PyTorch MPS",
+        "model": "CLIP ViT-B/32 image encoder",
+        "backend": "mps",
+        "cpuFallback": false
+      }
+    },
+    {
+      "trackId": 9,
+      "videoTime": 32,
+      "status": "normal",
+      "id": "normal-clean-a",
+      "label": "정상 A",
+      "score": 0.9964360594749451,
+      "inference": {
+        "provider": "Apple GPU / PyTorch MPS",
+        "model": "CLIP ViT-B/32 image encoder",
+        "backend": "mps",
+        "cpuFallback": false
+      }
+    },
+    {
+      "trackId": 10,
+      "videoTime": 36,
+      "status": "normal",
+      "id": "normal-clean-b",
+      "label": "정상 B",
+      "score": 0.9976751804351807,
+      "inference": {
+        "provider": "Apple GPU / PyTorch MPS",
+        "model": "CLIP ViT-B/32 image encoder",
+        "backend": "mps",
+        "cpuFallback": false
+      }
+    },
+    {
+      "trackId": 11,
+      "videoTime": 40,
+      "status": "defect",
+      "id": "defect-pinhole",
+      "label": "핀홀",
+      "score": 0.9973224401473999,
+      "inference": {
+        "provider": "Apple GPU / PyTorch MPS",
+        "model": "CLIP ViT-B/32 image encoder",
+        "backend": "mps",
+        "cpuFallback": false
+      }
+    },
+    {
+      "trackId": 12,
+      "videoTime": 44,
+      "status": "defect",
+      "id": "defect-scratch",
+      "label": "표면 긁힘",
+      "score": 0.9948714375495911,
+      "inference": {
+        "provider": "Apple GPU / PyTorch MPS",
+        "model": "CLIP ViT-B/32 image encoder",
+        "backend": "mps",
+        "cpuFallback": false
+      }
+    },
+    {
+      "trackId": 13,
+      "videoTime": 48,
+      "status": "defect",
+      "id": "defect-contamination",
+      "label": "이물 오염",
+      "score": 0.9966542720794678,
+      "inference": {
+        "provider": "Apple GPU / PyTorch MPS",
+        "model": "CLIP ViT-B/32 image encoder",
+        "backend": "mps",
+        "cpuFallback": false
+      }
+    },
+    {
+      "trackId": 14,
+      "videoTime": 52,
+      "status": "defect",
+      "id": "defect-deformation",
+      "label": "형상 변형",
+      "score": 0.9959258437156677,
+      "inference": {
+        "provider": "Apple GPU / PyTorch MPS",
+        "model": "CLIP ViT-B/32 image encoder",
+        "backend": "mps",
+        "cpuFallback": false
+      }
+    },
+    {
+      "trackId": 15,
+      "videoTime": 56,
+      "status": "defect",
+      "id": "defect-edge-chip",
+      "label": "가장자리 깨짐",
+      "score": 0.9952017664909363,
+      "inference": {
+        "provider": "Apple GPU / PyTorch MPS",
+        "model": "CLIP ViT-B/32 image encoder",
+        "backend": "mps",
+        "cpuFallback": false
+      }
+    },
+    {
+      "trackId": 16,
+      "videoTime": 60,
+      "status": "defect",
+      "id": "defect-radial-crack",
+      "label": "방사형 균열",
+      "score": 0.9966434836387634,
+      "inference": {
+        "provider": "Apple GPU / PyTorch MPS",
+        "model": "CLIP ViT-B/32 image encoder",
+        "backend": "mps",
+        "cpuFallback": false
+      }
+    },
+    {
+      "trackId": 17,
+      "videoTime": 64,
+      "status": "defect",
+      "id": "defect-deformation",
+      "label": "형상 변형",
+      "score": 0.9964165687561035,
+      "inference": {
+        "provider": "Apple GPU / PyTorch MPS",
+        "model": "CLIP ViT-B/32 image encoder",
+        "backend": "mps",
+        "cpuFallback": false
+      }
+    },
+    {
+      "trackId": 18,
+      "videoTime": 68,
+      "status": "defect",
+      "id": "defect-radial-crack",
+      "label": "방사형 균열",
+      "score": 0.9963130354881287,
+      "inference": {
+        "provider": "Apple GPU / PyTorch MPS",
+        "model": "CLIP ViT-B/32 image encoder",
+        "backend": "mps",
+        "cpuFallback": false
+      }
+    },
+    {
+      "trackId": 19,
+      "videoTime": 72,
+      "status": "defect",
+      "id": "defect-scratch",
+      "label": "표면 긁힘",
+      "score": 0.995029091835022,
+      "inference": {
+        "provider": "Apple GPU / PyTorch MPS",
+        "model": "CLIP ViT-B/32 image encoder",
+        "backend": "mps",
+        "cpuFallback": false
+      }
+    },
+    {
+      "trackId": 20,
+      "videoTime": 76,
+      "status": "defect",
+      "id": "defect-contamination",
+      "label": "이물 오염",
+      "score": 0.9961884021759033,
+      "inference": {
+        "provider": "Apple GPU / PyTorch MPS",
+        "model": "CLIP ViT-B/32 image encoder",
+        "backend": "mps",
+        "cpuFallback": false
+      }
+    },
+    {
+      "trackId": 21,
+      "videoTime": 80,
+      "status": "normal",
+      "id": "normal-clean-b",
+      "label": "정상 B",
+      "score": 0.9976962804794312,
+      "inference": {
+        "provider": "Apple GPU / PyTorch MPS",
+        "model": "CLIP ViT-B/32 image encoder",
+        "backend": "mps",
+        "cpuFallback": false
+      }
+    },
+    {
+      "trackId": 22,
+      "videoTime": 84,
+      "status": "defect",
+      "id": "defect-edge-chip",
+      "label": "가장자리 깨짐",
+      "score": 0.9960387349128723,
+      "inference": {
+        "provider": "Apple GPU / PyTorch MPS",
+        "model": "CLIP ViT-B/32 image encoder",
+        "backend": "mps",
+        "cpuFallback": false
+      }
+    },
+    {
+      "trackId": 23,
+      "videoTime": 88,
+      "status": "defect",
+      "id": "defect-pinhole",
+      "label": "핀홀",
+      "score": 0.9971890449523926,
+      "inference": {
+        "provider": "Apple GPU / PyTorch MPS",
+        "model": "CLIP ViT-B/32 image encoder",
+        "backend": "mps",
+        "cpuFallback": false
+      }
+    },
+    {
+      "trackId": 24,
+      "videoTime": 92,
+      "status": "normal",
+      "id": "normal-clean-a",
+      "label": "정상 A",
+      "score": 0.9960581064224243,
+      "inference": {
+        "provider": "Apple GPU / PyTorch MPS",
+        "model": "CLIP ViT-B/32 image encoder",
+        "backend": "mps",
+        "cpuFallback": false
+      }
+    },
+    {
+      "trackId": 25,
+      "videoTime": 96,
+      "status": "defect",
+      "id": "defect-radial-crack",
+      "label": "방사형 균열",
+      "score": 0.9963141679763794,
+      "inference": {
+        "provider": "Apple GPU / PyTorch MPS",
+        "model": "CLIP ViT-B/32 image encoder",
+        "backend": "mps",
+        "cpuFallback": false
+      }
+    },
+    {
+      "trackId": 26,
+      "videoTime": 100,
+      "status": "defect",
+      "id": "defect-pinhole",
+      "label": "핀홀",
+      "score": 0.9972156882286072,
+      "inference": {
+        "provider": "Apple GPU / PyTorch MPS",
+        "model": "CLIP ViT-B/32 image encoder",
+        "backend": "mps",
+        "cpuFallback": false
+      }
+    },
+    {
+      "trackId": 27,
+      "videoTime": 104,
+      "status": "defect",
+      "id": "defect-edge-chip",
+      "label": "가장자리 깨짐",
+      "score": 0.9957400560379028,
+      "inference": {
+        "provider": "Apple GPU / PyTorch MPS",
+        "model": "CLIP ViT-B/32 image encoder",
+        "backend": "mps",
+        "cpuFallback": false
+      }
+    },
+    {
+      "trackId": 28,
+      "videoTime": 108,
+      "status": "defect",
+      "id": "defect-deformation",
+      "label": "형상 변형",
+      "score": 0.9957827925682068,
+      "inference": {
+        "provider": "Apple GPU / PyTorch MPS",
+        "model": "CLIP ViT-B/32 image encoder",
+        "backend": "mps",
+        "cpuFallback": false
+      }
+    },
+    {
+      "trackId": 29,
+      "videoTime": 112,
+      "status": "normal",
+      "id": "normal-clean-a",
+      "label": "정상 A",
+      "score": 0.9956883192062378,
+      "inference": {
+        "provider": "Apple GPU / PyTorch MPS",
+        "model": "CLIP ViT-B/32 image encoder",
+        "backend": "mps",
+        "cpuFallback": false
+      }
+    },
+    {
+      "trackId": 30,
+      "videoTime": 116,
+      "status": "normal",
+      "id": "normal-clean-b",
+      "label": "정상 B",
+      "score": 0.9939824938774109,
+      "inference": {
+        "provider": "Apple GPU / PyTorch MPS",
+        "model": "CLIP ViT-B/32 image encoder",
+        "backend": "mps",
+        "cpuFallback": false
+      }
+    },
+    {
+      "trackId": 31,
+      "videoTime": 120,
+      "status": "defect",
+      "id": "defect-scratch",
+      "label": "표면 긁힘",
+      "score": 0.9950634241104126,
+      "inference": {
+        "provider": "Apple GPU / PyTorch MPS",
+        "model": "CLIP ViT-B/32 image encoder",
+        "backend": "mps",
+        "cpuFallback": false
+      }
+    },
+    {
+      "trackId": 32,
+      "videoTime": 124,
+      "status": "defect",
+      "id": "defect-contamination",
+      "label": "이물 오염",
+      "score": 0.9961422681808472,
+      "inference": {
+        "provider": "Apple GPU / PyTorch MPS",
+        "model": "CLIP ViT-B/32 image encoder",
+        "backend": "mps",
+        "cpuFallback": false
+      }
+    }
+  ],
+  "pending": 0,
+  "unprocessed": [],
+  "processedFrames": 3839,
+  "detectedPassages": 32,
+  "validation": {
+    "device": "Apple Silicon GPU via PyTorch MPS",
+    "source": "Live browser video run at 1x, 128-second synthetic video",
+    "correctInOrder": 32,
+    "expectedTotal": 32,
+    "scope": "Same eight reference designs repeated; does not establish real-camera accuracy"
+  }
+}

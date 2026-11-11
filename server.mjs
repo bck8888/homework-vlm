@@ -92,7 +92,7 @@ const server = createServer(async (req, res) => {
     }
     if (url.pathname === "/api/accelerator" && req.method === "POST") {
       const data = await bodyJson(req);
-      if (!['clip','prepare_siamese','siamese','prepare_references','match_references','export_references'].includes(data.action) || !['cuda','directml','migraphx','hailo10h'].includes(data.backend)) {
+      if (!['clip','prepare_siamese','siamese','prepare_references','match_references','export_references'].includes(data.action) || !['cuda','directml','migraphx','hailo10h','mps'].includes(data.backend)) {
         json(res,400,{error:'Unsupported accelerator request'}); return;
       }
       json(res,200,await accelerator(data)); return;
@@ -102,7 +102,7 @@ const server = createServer(async (req, res) => {
       return;
     }
     if (url.pathname === "/api/runtime") {
-      json(res, 200, { inference: "native-gpu-npu", cpuFallback: false, hailo: await hailoStatus() });
+      json(res, 200, { platform: process.platform, inference: "native-gpu-npu", cpuFallback: false, hailo: await hailoStatus() });
       return;
     }
     if (url.pathname === "/api/history" && req.method === "GET") {

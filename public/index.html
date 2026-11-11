@@ -57,6 +57,19 @@
             <button id="analyzeButton">현재 화면 판정</button>
             <label class="toggle"><input id="autoToggle" type="checkbox" /><span>자동 판정</span></label>
           </div>
+          <div class="video-speed-controls" style="padding:12px 0">
+            <strong>영상 재생 속도 <output id="videoSpeedOutput">1×</output></strong>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px">
+              <button type="button" class="speed-preset" data-speed="0.5" aria-pressed="false">0.5배</button>
+              <button type="button" class="speed-preset" data-speed="1" aria-pressed="true">1배</button>
+              <button type="button" class="speed-preset" data-speed="2" aria-pressed="false">2배</button>
+              <button type="button" class="speed-preset" data-speed="4" aria-pressed="false">4배</button>
+            </div>
+            <label style="display:block;margin-top:8px">세부 배속 조절 (0.25~4배)
+              <input id="videoSpeed" aria-label="영상 재생 배속" type="range" min="0.25" max="4" step="0.25" value="1" style="width:100%">
+            </label>
+            <small>파일 영상에 적용됩니다. 카메라 입력의 실제 속도는 바꾸지 않습니다.</small>
+          </div>
           <div class="roi-row">
             <div><span>검출 방식</span><strong>중앙 ROI + 대비 검사</strong></div>
             <div><span>검출 크기</span><strong id="roiSize">—</strong></div>
@@ -82,7 +95,7 @@
           </div>
           <div class="settings-grid">
             <label>추론 장치
-              <select id="acceleratorSelect"><option value="directml">AMD Radeon 680M · DirectML</option><option value="cuda">NVIDIA RTX 3060 · CUDA</option><option value="hailo10h">Hailo-10H · NPU</option></select>
+              <select id="acceleratorSelect"><option value="mps">Mac Apple GPU · MPS</option><option value="directml">AMD Radeon 680M · DirectML</option><option value="cuda">NVIDIA RTX 3060 · CUDA</option><option value="hailo10h">Hailo-10H · NPU</option></select>
             </label>
             <label>실행 엔진
               <select id="engineSelect">
@@ -111,7 +124,7 @@
           </div>
           <button id="trainSiamese" class="wide" style="margin-top:10px">Siamese 쌍 학습 시작</button>
           <p id="siameseProgress" class="engine-note">공유 인코더 256→32 · contrastive loss · 정상/불량 이미지 쌍. 학습 후 기준 이미지와 거리 비교.</p>
-          <p class="engine-note">CLIP: GPU용 FP32 ONNX / Hailo용 HEF. 모델과 실행 파일은 로컬에서 읽습니다. Siamese 학습은 현재 CPU, 추론은 GPU입니다. Hailo용 Siamese 컴파일은 미완료입니다.</p>
+          <p class="engine-note">CLIP: Mac Apple GPU(MPS) / Windows GPU(ONNX) / Hailo NPU(HEF). 모델과 실행 파일은 로컬에서 읽습니다. Siamese 학습은 현재 CPU, 추론은 GPU입니다. Hailo용 Siamese 컴파일은 미완료입니다.</p>
         </aside>
       </section>
 

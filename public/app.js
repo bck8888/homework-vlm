@@ -202,6 +202,7 @@ async function nativeRequest(action, extra = {}) {
   if (!response.ok) throw new Error(data.error || '가속기 실행 실패');
   if (data.provider && requestVersion===state.runVersion) {
   state.lastInference = {provider:data.provider,model:data.model,backend:$('#acceleratorSelect').value,cpuFallback:data.cpuFallback};
+  status(els.modelStatus, 'GPU/NPU 추론 확인', 'ok');
   $('#acceleratorStatus').textContent = `${data.provider} · ${data.model} · CPU 대체 없음`;
   }
   return data;
@@ -213,7 +214,7 @@ async function loadModel() {
   if (!response.ok) throw new Error(data.error || '가속기 확인 실패');
   const backend = $('#acceleratorSelect').value;
   const names = {cuda:'CUDAExecutionProvider',directml:'DmlExecutionProvider'};
-  if (backend === 'hailo10h' ? !data.hailoRuntimeInstalled : !data.providers.includes(names[backend])) {
+  if (backend === 'mps' ? !data.appleMPSAvailable : backend === 'hailo10h' ? !data.hailoRuntimeInstalled : !data.providers.includes(names[backend])) {
     status(els.modelStatus,'가속기 준비 안 됨','bad');
     throw new Error('선택한 GPU/NPU 실행 환경이 없습니다. CPU로 대체하지 않습니다.');
   }
@@ -316,7 +317,7 @@ async function referenceScores() {
 async function buildReferenceDB() {
   if (state.analyzing || state.videoBusy) return;
   const button=$('#buildReferenceDB');button.disabled=true;
-  stopCamera();els.autoToggle.checked=false;updateAuto();
+  stopCamera();button.disabled=true;els.autoToggle.checked=false;updateAuto();
   $('#referenceStatus').textContent='8개 기준 이미지를 인코딩하고 JSON DB에 저장 중…';
   try {
     const references=[];
@@ -472,6 +473,7 @@ async function checkRuntime() {
     const health = await fetch("/api/health").then((r) => r.json());
     status(els.serverStatus, health.ok ? "저장 서버 연결" : "서버 오류", health.ok ? "ok" : "bad");
     const runtime = await fetch("/api/runtime").then((r) => r.json());
+    if(runtime.platform && runtime.platform !== 'darwin' && $('#acceleratorSelect').value === 'mps') $('#acceleratorSelect').value = runtime.platform === 'linux' ? 'hailo10h' : 'directml';
     status(els.hailoStatus, runtime.hailo.available ? `${runtime.hailo.device} 감지` : "Hailo 미감지", runtime.hailo.available ? "ok" : "warn");
   } catch {
     status(els.serverStatus, "정적 모드", "warn"); status(els.hailoStatus, "확인 불가", "warn");
@@ -560,6 +562,7 @@ async function startVideo() {
     const schedule=()=>{
       state.frameHandle=els.camera.requestVideoFrameCallback ? els.camera.requestVideoFrameCallback(frame) : requestAnimationFrame(frame);
     };
+    els.camera.playbackRate=Number($('#videoSpeed').value);
     schedule();await els.camera.play();
     $('#videoPause').disabled=false;$('#videoPause').textContent='영상 일시정지';
     els.fpsBadge.textContent='연속 재생 · 비동기 판정';
@@ -572,6 +575,15 @@ $('#acceleratorSelect').addEventListener('change', () => {
   stopCamera(); siamese = null; els.autoToggle.checked = false; updateAuto(); resetDecision();
   $('#acceleratorStatus').textContent = '선택한 가속기에서 아직 추론하지 않았습니다.';
 });
+function setVideoSpeed(value) {
+  const rate=Math.min(4,Math.max(.25,Number(value)||1));
+  $('#videoSpeed').value=String(rate);
+  $('#videoSpeedOutput').value=`${rate}×`;
+  document.querySelectorAll('.speed-preset').forEach(button=>button.setAttribute('aria-pressed',String(Number(button.dataset.speed)===rate)));
+  if(state.videoInput)els.camera.playbackRate=rate;
+}
+$('#videoSpeed').addEventListener('input',event=>setVideoSpeed(event.target.value));
+document.querySelectorAll('.speed-preset').forEach(button=>button.addEventListener('click',()=>setVideoSpeed(button.dataset.speed)));
 $('#videoStart').addEventListener('click', startVideo);
 $('#videoPause').addEventListener('click', async () => {
   if (els.camera.paused) { await els.camera.play(); $('#videoPause').textContent = '영상 일시정지'; }

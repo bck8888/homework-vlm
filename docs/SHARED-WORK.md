@@ -27,3 +27,13 @@ Fetch current remote before changes. Preserve other work; use separate feature b
 - Video no longer pauses per inference. Frame callbacks → line-crossing IDs → bounded 16-item FIFO → result tied to original ID/time.
 - End of video waits for queue drain. Overflow, failures, and cancelled runs are explicit.
 - Synthetic center-frame diagnostic reached 32/32 with image matching, versus text top-1 8/32. This is not a target-device benchmark or live camera validation.
+
+## Apple Silicon support
+
+- Mac Apple GPU uses PyTorch MPS with CPU model fallback disabled. CLIP image embeddings and Siamese inference supported.
+- Original OpenAI CLIP PyTorch weights are pinned and SHA256 checked by `download-models.py --target mps`. Runtime is offline-only.
+- Rebuild the image-reference DB on MPS; Windows FP32 and Hailo DBs are not silently reused.
+- `scripts/start-mac.command` starts the local app. Setup uses Python 3.12 and tested package pins in native/requirements-mac.txt.
+
+- Mac MPS live browser 1x video verified: 32/32 passages, 4/class, ordered labels 32/32, no errors or dropped queued items. Artifact: docs/evaluation/mac-mps-live-video.json.
+- Playback speed presets 0.5/1/2/4x and 0.25–4x slider added; live 4x→2x change verified.

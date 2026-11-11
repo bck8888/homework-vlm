@@ -112,3 +112,5 @@ footer { background: #e8edf0; color: #50677a; padding: 18px max(32px, calc((100v
   .db-row { grid-template-columns: 90px 1fr; }.db-row code { grid-column: 1 / 3; }.camera-actions { flex-wrap: wrap; }.toggle { margin-left: 0; }
   footer { flex-direction: column; }
 }
+
+.speed-preset[aria-pressed="true"] { background:#126b78; color:white; border-color:#126b78; }

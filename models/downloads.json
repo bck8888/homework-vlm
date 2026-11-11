@@ -5,7 +5,8 @@
     "sha256": "493ef57ff783e42d1530c91b53469b7fdf8db8a9c1408e86998fcb7899a4f495",
     "targets": [
       "cuda",
-      "directml"
+      "directml",
+      "mps"
     ]
   },
   {
@@ -14,7 +15,8 @@
     "sha256": "6f638fb9401a6d6296feff533ee7efe657b787c49f954f82f5906b36ef2a1b1f",
     "targets": [
       "cuda",
-      "directml"
+      "directml",
+      "mps"
     ]
   },
   {
@@ -23,7 +25,8 @@
     "sha256": "f7f3b7af117d467b58374797691a6438d3e6b9e9cef800dfd5dced7f697a90cd",
     "targets": [
       "cuda",
-      "directml"
+      "directml",
+      "mps"
     ]
   },
   {
@@ -32,7 +35,8 @@
     "sha256": "60ba2912bc6344c94bc16bbdec27fa1209409167b6f2fdf3cfe9e65462ea3967",
     "targets": [
       "cuda",
-      "directml"
+      "directml",
+      "mps"
     ]
   },
   {
@@ -41,7 +45,8 @@
     "sha256": "c4864a9376a8401918425bed71fc14fc0e81f9b59ec45c1cf96cccb2df508eac",
     "targets": [
       "cuda",
-      "directml"
+      "directml",
+      "mps"
     ]
   },
   {
@@ -50,7 +55,8 @@
     "sha256": "5047b556ce86ccaf6aa22b3ffccfc52d391ea4accdab9c2f2407da5b742d4363",
     "targets": [
       "cuda",
-      "directml"
+      "directml",
+      "mps"
     ]
   },
   {
@@ -59,7 +65,8 @@
     "sha256": "9fd691f7c8039210e0fced15865466c65820d09b63988b0174bfe25de299051a",
     "targets": [
       "cuda",
-      "directml"
+      "directml",
+      "mps"
     ]
   },
   {
@@ -68,7 +75,8 @@
     "sha256": "ae287015b60eb7ca1d40e726c550af1988977c24f0005f123274d52490c20d8d",
     "targets": [
       "cuda",
-      "directml"
+      "directml",
+      "mps"
     ]
   },
   {
@@ -86,6 +94,14 @@
     "sha256": "440bca63288af13115adfebbc8540a712d236ab51b63c52ed7c71e8cb1a949b0",
     "targets": [
       "hailo10h"
+    ]
+  },
+  {
+    "target": "public/models/Xenova/clip-vit-base-patch32/pytorch_model.bin",
+    "url": "https://huggingface.co/openai/clip-vit-base-patch32/resolve/3d74acf9a28c67741b2f4f2ea7635f0aaf6f0268/pytorch_model.bin",
+    "sha256": "a63082132ba4f97a80bea76823f544493bffa8082296d62d71581a4feff1576f",
+    "targets": [
+      "mps"
     ]
   }
 ]

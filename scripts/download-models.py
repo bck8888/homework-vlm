@@ -5,7 +5,7 @@ import json
 from pathlib import Path
 import urllib.request
 root=Path(__file__).resolve().parents[1]
-p=argparse.ArgumentParser();p.add_argument('--target',choices=['cuda','directml','hailo10h'],required=True);p.add_argument('--verify-only',action='store_true');args=p.parse_args()
+p=argparse.ArgumentParser();p.add_argument('--target',choices=['cuda','directml','hailo10h','mps'],required=True);p.add_argument('--verify-only',action='store_true');args=p.parse_args()
 for item in json.loads((root/'models/downloads.json').read_text()):
  if args.target not in item['targets']: continue
  target=root/item['target']
@@ -21,6 +21,6 @@ for item in json.loads((root/'models/downloads.json').read_text()):
   partial.replace(target)
  print('Verified',item['target'],flush=True)
 
-if args.target != 'hailo10h' and not args.verify_only:
+if args.target in ['cuda','directml'] and not args.verify_only:
  import subprocess,sys
  subprocess.run([sys.executable,str(root/'scripts/export-clip-image.py')],check=True)

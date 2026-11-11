@@ -22,8 +22,9 @@ def status():
     except ImportError:
         providers = []
     import importlib.util
+    from apple_gpu import available
     return {'providers': providers, 'hailoRuntimeInstalled': importlib.util.find_spec('hailo_platform') is not None,
-            'cpuFallback': False, 'note': 'Provider availability is not proof of a successful device inference.'}
+            'appleMPSAvailable': available(), 'cpuFallback': False, 'note': 'Provider availability is not proof of a successful device inference.'}
 
 def session(model, backend, key):
     import onnxruntime as ort
@@ -53,6 +54,10 @@ def image(data):
 def clip(data):
     import numpy as np
     backend = data['backend']
+    if backend == 'mps':
+        from apple_gpu import text_scores
+        scores=text_scores(image(data['image']),[c['prompt'] for c in data['classes']],MODEL)
+        return {'scores':scores.tolist(),'provider':'Apple GPU / PyTorch MPS','model':'CLIP ViT-B/32 FP32','cpuFallback':False}
     if backend == 'hailo10h':
         return hailo_clip(data)
     from tokenizers import Tokenizer
@@ -77,6 +82,10 @@ def clip(data):
 def prepare_siamese(data):
     global siamese
     import numpy as np
+    if data['backend']=='mps':
+        from apple_gpu import prepare_siamese as prepare
+        prepare(data['weights'],data['bias'],data['references'])
+        return {'provider':'Apple GPU / PyTorch MPS','model':'shared Siamese 256→32','cpuFallback':False}
     import onnx
     from onnx import helper, numpy_helper, TensorProto
     if data['backend'] == 'hailo10h':
@@ -98,6 +107,9 @@ def prepare_siamese(data):
 
 def infer_siamese(data):
     import numpy as np
+    if data['backend']=='mps':
+        from apple_gpu import siamese_scores
+        return {'scores':siamese_scores(data['pixels']).tolist(),'provider':'Apple GPU / PyTorch MPS','model':'shared Siamese 256→32','cpuFallback':False}
     if siamese is None or siamese['backend'] != data['backend']:
         raise RuntimeError('선택한 GPU에 Siamese 모델을 준비하세요.')
     query=siamese['runtime'].run(None,{'input':np.asarray(data['pixels'],np.float32).reshape(1,256)})[0][0]
@@ -111,6 +123,7 @@ fingerprints = {}
 def model_fingerprint(backend):
     import hashlib
     file = ROOT/'models/hailo/clip_vit_b_32_image_encoder.hef' if backend == 'hailo10h' else MODEL/'onnx/model.onnx'
+    if backend=='mps': file=MODEL/'pytorch_model.bin'
     key = (str(file),file.stat().st_mtime_ns)
     if key not in fingerprints:
         digest = hashlib.sha256()
@@ -150,6 +163,9 @@ def image_embedding(data):
     import numpy as np
     backend = data['backend']
     rgb = np.asarray(image(data['image']))
+    if backend=='mps':
+        from apple_gpu import embedding
+        return embedding(rgb,MODEL), 'Apple GPU / PyTorch MPS'
     if backend == 'hailo10h':
         return hailo_embedding(rgb), 'HailoRT / Hailo-10H'
     path = MODEL/'onnx/image_encoder.onnx'
@@ -185,7 +201,7 @@ def reference_db(data):
         db=build(rows,model_fingerprint(backend),{'provider':provider,'backend':backend,'source':'8 reference SVG images; not video answer sequence'})
         save(db,path)
         return {'count':len(rows),'provider':provider,'model':db['model'],'cpuFallback':False}
-    if not path.exists() and backend != 'hailo10h':
+    if not path.exists() and backend in PROVIDERS:
         path=ROOT/'models/references/clip-fp32.json'
     if not path.exists(): raise RuntimeError('선택 장치의 기준 벡터 DB가 없습니다. 기준 DB 만들기를 실행하세요.')
     db=json.loads(path.read_text(encoding='utf-8'))

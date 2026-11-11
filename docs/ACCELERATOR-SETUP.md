@@ -109,3 +109,24 @@ python -m pip download -r requirements-device.lock -d wheelhouse
 - `카운팅 JSON 저장`에는 표본 ID, 촬영 시각, 실제 추론 장치, 미처리 사유, 대기 개수가 포함됩니다. 종료 후 대기 0개인지 확인하세요.
 
 로컬 진단: 기존 CLIP 설명 비교는 32개 중앙 프레임에서 8종 top-1 8/32, 정상·불량 12/32였습니다. 기준 이미지 DB + 글자 제외 검출은 동일 프레임에서 32/32였습니다. 이는 같은 디자인 8개를 반복한 합성 프레임의 CPU 재현 결과이며, 실제 GPU/NPU 처리량·실시간 카운팅·카메라 정확도를 검증한 결과가 아닙니다.
+
+## Mac Apple Silicon (추가)
+
+Mac도 실행 대상입니다. 아래 설치는 Python 3.12와 Node.js 22 이상을 기준으로 합니다. Apple GPU / PyTorch MPS로 CLIP 이미지 인코딩과 Siamese 추론을 수행합니다. CPU 모델 fallback은 비활성화합니다. 이 경로는 Apple Neural Engine(NPU)이 아니라 Apple GPU입니다. Intel Mac은 이 실행 경로의 지원 대상이 아닙니다.
+
+인터넷 연결 상태에서 최초 준비:
+
+```sh
+python3.12 -m venv .venv
+.venv/bin/python -m pip install -r native/requirements-mac.txt
+.venv/bin/python scripts/download-models.py --target mps
+npm ci
+npm run build
+bash scripts/start-mac.command
+```
+
+`http://127.0.0.1:4174/` → Mac Apple GPU · MPS → 가속기 확인 → 기준 이미지 DB 만들기 → 랜덤 32개 영상 검사 순서입니다. 기준 DB는 Apple GPU로 생성해 `data/reference-embeddings-mps.json`에 저장합니다. 이후 재실행에는 다시 만들 필요가 없습니다. 모델 변경 시에는 다시 생성하세요. 모든 설치와 모델 준비가 끝나면 인터넷을 끊어도 실행됩니다.
+
+영상 속도는 0.5배/1배/2배/4배 버튼 또는 0.25~4배 슬라이더로 재생 중 변경할 수 있습니다. 원본 영상 시간(videoTime)과 판정 결과는 유지됩니다. 고배속에서는 대기열 초과 또는 프레임 검출 누락이 늘 수 있으므로 최종 카운트와 미처리 항목을 확인하세요.
+
+Mac 실기 확인: Apple GPU(MPS)로 기준 DB를 생성하고 1배속 128초 전체 영상을 재생해 32개 통과, 종류별 4개, 순서별 정답 32/32, 확인 필요·미처리·오류 0건을 확인했습니다. 기록은 docs/evaluation/mac-mps-live-video.json입니다. 2배↔4배의 재생 중 속도 변경도 실제 playbackRate로 확인했습니다. 고배속 전체 정확도나 실제 카메라 정확도를 검증한 결과는 아닙니다.
